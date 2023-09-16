@@ -181,3 +181,6 @@ A. This plugin takes priority. The built-in VIM forth syntax highlighter is made
 A. Sorry, not from me, and I'm not aware of any others. One of the original reasons I switched to VIM is because the vscode built-in forth syntax was much worse than the built-in VIM syntax highlighting.
 
 
+
+The syntax folder should be saved to the ~/.vim/ folder. e.g. ~/.vim/syntax should contain the forth.vim file
+

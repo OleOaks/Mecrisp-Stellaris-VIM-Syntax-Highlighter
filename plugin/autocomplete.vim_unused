@@ -1,0 +1,82 @@
+" " Define a Vim function that performs autocompletion
+" function! MyAutocomplete(findstart, base)
+" 
+"   if a:findstart
+"   " Get the text before the cursor
+"   let l:before_cursor = getline('.')[:col('.') - 1]
+" "  echomsg "Text before cursor = " . l:before_cursor
+" 
+"   " Define your own logic to generate completions
+"   let l:completions = []
+" 
+"   if l:before_cursor == "he"
+"     call add(l:completions, "hello")
+"     call add(l:completions, "brett")
+"   elseif l:before_cursor == "fo"
+"     call add(l:completions, "foo")
+"     call add(l:completions, "bar")
+"   endif
+" 
+" "  for completion in l:completions
+" "    echomsg "Completion: " . completion
+" "  endfor
+" 
+"   return [1, l:completions]
+" endfunction
+"
+function! MyAutocomplete(findstart, base)
+  "echomsg "Hi brett"
+  if a:findstart
+    " locate the start of the word
+    let line = getline('.')
+    let start = col('.') - 1
+    while start > 0 && line[start -1] =~ '\a'
+      let start -= 1
+    endwhile
+    return start
+  else
+    "let l:before_cursor = getline('.')[:col('.') - 1]
+    let l:completions = []
+ 
+    "echomsg "Before Cursor: " . l:before_cursor
+    "echomsg "a:base " . a:base
+    "if l:before_cursor == "he"
+    if a:base == "he"
+      call add(l:completions, "hello")
+      call add(l:completions, "brett")
+    "elseif l:before_cursor == "fo"
+    elseif a:base == "fo"
+      call add(l:completions, "foo")
+      call add(l:completions, "bar")
+    else
+      "call add(l:completions, v:none)
+      "l:completions = v:none
+      "return v:null
+      return l:completions
+    endif
+  endif  
+
+  "for completion in l:completions
+  ""  echomsg "Completeion: " . completion
+  "endfor
+  
+  return l:completions
+endfunction
+
+" Define autocommands to trigger the autocompletion function
+"autocmd InsertEnter * set omnifunc=MyAutocomplete
+"autocmd TextChangedI * set omnifunc=MyAutocomplete
+"autocmd InsertEnter * call MyAutocomplete()
+"autocmd TextChangedI * call MyAutocomplete()
+autocmd InsertEnter * :silent call feedkeys("\<C-x>\<C-o>")
+autocmd TextChangedI * :silent call feedkeys("\<C-x>\<C-o>")
+"autocmd InsertEnter * :silent call MyAutocomplete(1, '') "feedkeys("\<C-x>\<C-o>")
+"autocmd TextChangedI * :silent call feedkeys(0, '')     "\<C-x>\<C-o>")
+
+" Set the completefunc option to use the custom autocompletion function
+"set completefunc=MyAutocomplete
+set omnifunc=MyAutocomplete
+
+"set completeopt+=menu
+set completeopt+=menuone
+

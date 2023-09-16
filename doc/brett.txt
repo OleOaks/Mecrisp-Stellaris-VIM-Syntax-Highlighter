@@ -1,0 +1,94 @@
+*brett.txt* Help for anything Brett wants!
+
+|stm32|           STM32
+|bovim| 	VIM - General
+|bovimhelp|	VIM - Help
+|bovimvimrc|	VIM - vimrc
+|boshell|	Shell
+|boawk| 	AWK
+
+
+
+=============================================================================== 
+                                                                          *bovim* 
+|~
+Move to specific column '|'... e.g. 80|
+
+:tabe~
+Open new tab with blank file
+
+:tabe file~
+Open new tab, edit file
+
+:bro old~
+Browse old files
+
+:gx~
+Follow hyperlink
+
+:ls~
+List buffers
+
+
+=============================================================================== 
+                                                                      *bovimhelp* 
+
+:helptags ALL~
+Regenerate all help tags
+
+autocmd FileType help wincmd L~
+(.vimrc) Opens help files vsplit
+
+=============================================================================== 
+                                                                     *bovimvimrc* 
+
+
+=============================================================================== 
+                                                                        *boshell* 
+POSIX Shell~
+
+#!/bin/sh:~
+Top of shell script
+
+chmod u+x name:~
+Change file name to executable
+
+./filename:~
+Run file in active directory
+
+=============================================================================== 
+                                                                          *boawk* 
+AWK~
+
+
+
+=============================================================================== 
+                                                                        *boSTM32* 
+
+-------------------------------------------------------------------------------
+                                                                      *bopicocom*
+PICOCOM~
+
+pstat -t:~
+List terminals, i.e. ttyU0 for usb
+
+
+picocom link on sourceforge:~
+https://mecrisp-stellaris-folkdoc.sourceforge.io/serial-terminals.html?highlight=picocom
+(press gx to follow hyperlink)
+
+Command line:~
+picocom -b 115200 /dev/ttyU0 --imap lfcrlf,crcrlf --omap delbs,crlf --send-cmd "ascii-xfr -s -l200"
+
+Picocom Shell Script with xterm title:~
+xterm -bg black -fg Silver -fa 'Monospace' -fs 12 -geometry 108x75+1+1 -fs 10 -title 'Picocom 115200 RTSCTS, /dev/cuaU0 | <ctrl> AQ to exit ' -e picocom -b 460800 /dev/ttyU0 --imap lfcrlf,crccrlf --omap delbs,crlf --send-cmd "ascii-xfr -s" &
+(~/forth/picoforth.sh)
+
+
+
+
+
+
+
+
+# vim: tw=120 ts=8 filetype=help modifiable noreadonly

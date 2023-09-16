@@ -57,6 +57,10 @@ syn sync maxlines=400
 " Mecrisp-Stellaris forth is case-insensitive
 syn case ignore
 
+source ~/.vim/syntax/mcu/mcu_peripheral.vim
+source ~/.vim/syntax/mcu/mcu_register.vim
+source ~/.vim/syntax/mcu/mcu_bitfield.vim
+
 " Some special, non-FORTH keywords
 syn keyword forthTodo contained TODO FIXME XXX
 
@@ -131,8 +135,20 @@ syn keyword forthBits HBIC! BIC! CBIS! HBIS! BIS!
 syn keyword forthMemoryStatus UNUSED
 
 " Memory Access
-syn keyword forthMemoryAccess MOVE FILL 2CONSTANT CONSTANT 2VARIABLE VARIABLE NVARIABLE
-syn keyword forthMemoryAccess BUFFER: 2@ 2! @ ! +! H@ H! H+! C@ C! C+!
+syn keyword forthMemoryAccess MOVE FILL
+syn keyword forthMemoryAccess 2@ 2! @ ! +! H@ H! H+! C@ C! C+!
+" 2Constant-Space-WordName
+syn match forthMemoryAccess /\s2constant\s\S*/
+" Constant-Space-WordName
+syn match forthMemoryAccess /\sconstant\s\S*/
+" 2VARIABLE-Space-WordName
+syn match forthMemoryAccess /\s2variable\s\S*/
+" VARIABLE-Space-WordName
+syn match forthMemoryAccess /\svariable\s\S*/
+" NVARIABLE-Space-WordName
+syn match forthMemoryAccess /\snvariable\s\S*/
+" BUFFER:-Space-WordName
+syn match forthMemoryAccess /\(^\|\s\)buffer:\s\S*/
 
 " String Routines
 syn keyword forthStringRoutines TYPE CR BL SPACE SPACES COMPARE ACCEPT
@@ -181,14 +197,15 @@ syn keyword forthFolding 5-FOLDABLE 6-FOLDABLE 7-FOLDABLE
 
 " Compiler Essentials
 syn keyword forthCompilerEssentials EXECUTE RECURSE ' ['] POSTPONE <BUILDS DOES>
-syn keyword forthCompilerEssentials CREATE STATE 
+syn keyword forthCompilerEssentials STATE 
     " Left square bracket, right square bracket, semicolon, or colon
 syn match forthCompilerEssentials '\<[:;[\]]\>'
     " LeftBracket-Apostrophe-RightBracket
 syn match forthCompilerEssentials +\<\['\]\>+
     " Colon-Space-WordName
 syn match forthColonDef /^:\s*\S*/
-" syn match forthColonDef /\<;\>/
+    " Create-Space-WordName
+syn match forthMemoryAccess /\screate\s\S*/
 
 " Decisions
 syn keyword forthDecisions THEN ELSE IF
@@ -224,11 +241,12 @@ syn match forthInteger '\<\$\x*\x\+\>'
 syn match forthInteger '\<%[0-1]*[0-1]\+\>'
 syn match forthFixed '\<-\=\d*,\d*\>'
 
+" Stack definition comment
+syn match forthStackDef /(.*)/
+
 " Comments
 syn match forthComment '\\\(\s.*\)\=$' contains=@Spell,forthTodo,forthSpaceError
 
-" Stack definition comment
-syn match forthStackDef /(.*)/
 
 " -----------------------------------------------------------------------------
 " ASSIGN COLORS
@@ -280,17 +298,16 @@ hi def link forthCMSIS Constant
 hi def link forthColonDef Structure
 hi def link forthStackDef Tag
 
-let b:current_syntax = "forth"
- 
-let &cpo = s:cpo_save
-unlet s:cpo_save
-
 " Include common non-Mecrisp standard words
 :runtime! syntax/common.vim
 
 " Include chip specific cmsis
 :runtime! syntax/mcu/stm32f103c8t6.vim
 
-:unlet b:current_syntax
+":unlet b:current_syntax
 
+let b:current_syntax = "forth"
+ 
+let &cpo = s:cpo_save
+unlet s:cpo_save
 

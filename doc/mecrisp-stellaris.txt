@@ -1,0 +1,2806 @@
+*mecrisp-stellaris.txt*  Help for Mecrisp-Stellaris Forth programming language
+
+                       MECRISP-STELLARIS HELP
+                           by Brett Olson
+
+     -----------+-----------------------------------+--------------
+     Dictionary | Description                       | Example Code
+     -----------+-----------------------------------+--------------
+     |dict_01.01| | Terminal IO                       | |example_01.01|
+     |dict_01.02| | Character Manipulation            | |example_01.02|
+     |dict_01.03| | Single Stack Jugglers             | |example_01.03|
+     |dict_01.04| | Double Stack Jugglers             | |example_01.04|
+     |dict_01.05| | Stack Pointers                    | |example_01.05|
+     |dict_01.06| | Logic                             | |example_01.06|
+     |dict_01.07| | Single Number Math                | |example_01.07|
+     |dict_01.08| | Double Number Math                | |example_01.08|
+     |dict_01.09| | Fixed Point Arithmetic            | |example_01.09|
+     |dict_01.10| | Single Comparisons                | |example_01.10|
+     |dict_01.11| | Signed Comparisons                | |example_01.11|
+     |dict_01.12| | Double Comparisons                | |example_01.12|
+     |dict_01.13| | Bits: Test, Toggle, Clear and Set | |example_01.13|
+     |dict_01.14| | Memory Status                     | |example_01.14|
+     |dict_01.15| | Memory Access                     | |example_01.15|
+     |dict_01.16| | String Routines                   | |example_01.16|
+     |dict_01.17| | Counted String Routines           | |example_01.17|
+     |dict_01.18| | Pictured Numerical Output         | |example_01.18|
+     |dict_01.19| | Deep Insights                     | |example_01.19|
+     |dict_01.20| | User Input and Interpretation     | |example_01.20|
+     |dict_01.21| | Dictionary Expansion              | |example_01.21|
+     |dict_01.22| | Speciality!                       | |example_01.22|
+     |dict_01.20| | Special Words Depending on MCU    | |example_01.20|
+     |dict_01.24| | Flags and Inventory               | |example_01.24|
+     |dict_01.25| | Folding                           | |example_01.25|
+     |dict_01.26| | Compiler Essentials               | |example_01.26|
+     |dict_01.27| | Decisions                         | |example_01.27|
+     |dict_01.28| | Case                              | |example_01.28|
+     |dict_01.29| | Indefinite Loops                  | |example_01.29|
+     |dict_01.30| | Definite Loops                    | |example_01.30|
+     |dict_01.31| | Common Hardware example_Access    | |example_01.31|
+     -----------+-----------------------------------+--------------
+
+     Jump to links: Double-click, or Ctrl+]
+     
+     VIM remembers your jumps:
+     Use Ctrl+O to jump back
+     Use Ctrl+T to jump forward
+
+==============================================================================
+Dictionary~
+------------------------------------------------------------------------------
+                                                                    *dict_01.01*
+Terminal IO~
+|emit?|        (      -- Flag   )  Ready to send a character?
+|key?|         (      -- Flag   )  Check if a key is waiting
+|key|          (      -- Flag   )  Waits for and fetches the pressed key
+|emit|         ( Char --        )  Emits a character.
+|hook-emit?|   (      -- a-addr )  Hooks for redirecting
+|hook-key?|    (      -- a-addr )  Terminal IO
+|hook-key|     (      -- a-addr )  On the fly
+|hook-emit|    (      -- a-addr )
+|serial-emit?| (      -- Flag   ) Serial interface
+|serial-key?|  (      -- Flag   ) Terminal routines
+|serial-key|   (      -- Char   )
+|serial-emit|  ( Char --        )
+|hook-pause|   (      -- a-addr ) Hook for a multitasker
+|pause|        (      --        ) Task switch, none for default
+------------------------------------------------------------------------------
+                                                                    *dict_01.02*
+Character Manipulation~
+|[char]| (      -- char ) Compiles code of following char when executed
+|char|   (      -- char ) Gives code of following char
+|emit|   ( char --      ) Emits a character
+------------------------------------------------------------------------------
+                                                                    *dict_01.03*
+Single-Jugglers~
+|depth|  (          -- +n       ) Number of single-cell stack items
+|nip|    (    x1 x2 -- x2       ) Drop the second item on the stack
+|drop|   (        x --          ) Drop the first item on the stack
+|rot|    ( x1 x2 x3 -- x2 x3 x1 ) Move the third item to top
+|-rot|   ( x1 x2 x3 -- x3 x1 x2 ) Move the top item to be the third
+|swap|   (    x1 x2 -- x2 x1    ) Switch order of the top two items
+|tuck|   (    x1 x2 -- x2 x1 x2 ) Copy the top item to be the third
+|over|   (    x1 x2 -- x1 x2 x1 ) Copy second item to the top
+|?dup|   (        x -- 0 | x x  )
+|dup|    (        x -- x x      ) Copy the top item to be the second
+|pick|   (...xi+1 xi...x0 i--...x1 x0 xi ) Copy an element X levels down the 
+                                         stack to the top of the stack
+|>r|     ( x --    ) ( R:   -- x ) Push to Return Stack
+|r>|     (   -- x  ) ( R: x --   ) Pull from Return Stack
+|r@|     (   -- x  ) ( R: x -- x ) Copy from Return Stack
+|rdrop|  (   --    ) ( R: x --   ) Drop top item from Return Stack
+|rdepth| (   -- +n )               Gives number of return stack items
+|rpick|  (i--xi)R:(...xi...x0--...xi...x0) Copy an element x levels down
+|roll|   (xu xu-1...x0 u--xu-1...x- xu)    Remove u. Rotate u+1 items on the
+                                         top of the stack.
+|-roll|  (xu-1...x0 xu u--xu xu-1...x0)
+------------------------------------------------------------------------------
+                                                                    *dict_01.04*
+Double-Jugglers~
+|2nip|   (       x1 x2 x3 x4 -- x3 x4             ) Delete items 3 and 4
+|2drop|  (             x1 x2 --                   ) Delete top 2 items
+|2rot|   ( x1 x2 x3 x4 x5 x6 -- x3 x4 x5 x6 x1 x2 ) Move 5th, 6th to top
+|2-rot|  ( x1 x2 x3 x4 x5 x6 -- x5 x6 x1 x2 x3 x4 ) Move top two to 5th, 6th
+|2swap|  (       x1 x2 x3 x4 -- x3 x4 x1 x2       ) Swap 1, 2 with 3, 4
+|2tuck|  (       x1 x2 x3 x4 -- x3 x4 x1 x2 x3 x4 ) Copy 1, 2 to 5, 6
+|2over|  (       x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 ) Copy 3, 4 to top
+|2dup|   (             x1 x2 -- x1 x2 x1 x2       ) Copy 1, 2 to 3, 4
+|2>r|    ( x1 x2 --       ) ( R:       -- x1 x2 ) Copy 1, 2 to Return stack
+|2r>|    (       -- x1 x2 ) ( R: x1 x2 --       ) Copy 1, 2 from return
+|2r@|    (       -- x1 x2 ) ( R: x1 x2 -- x1 x2 )
+|2rdrop| (       --       ) ( R: x1 x2 --       ) Delete 1, 2 from return
+------------------------------------------------------------------------------
+                                                                    *dict_01.05*
+Stack pointers~
+|sp@| (        -- a-addr ) Fetch data stack pointer
+|sp!| ( a-addr --        ) Store data stack pointer
+|rp@| (        -- a-addr ) Fetch return stack pointer
+|rp!| ( a-addr --        ) Store return stack pointer
+------------------------------------------------------------------------------
+                                                                    *dict_01.06*
+Logic~
+|arshift| (  x1 u -- x2 ) Arithmetic right-shift of u bit-places
+|rshift|  (  x1 u -- x2 ) Logical right-shift of u bit-places
+|lshift|  (  x1 u -- x3 ) Logical left-shift of u bit-places
+|shr|     (    x1 -- x2 ) Logical right-shift of one bit-place
+|shl|     (    x1 -- x2 ) Logical left-shift of one bit-place
+|ror|     (    x1 -- x2 ) Logical right-rotation of one bit-place
+|rol|     (    x1 -- x2 ) Logical left-rotation of one bit-place
+|bic|     ( x1 x2 -- x3 ) Bit clear, identical to "not and"
+|not|     (    x1 -- x2 ) Invert all bits
+|xor|     ( x1 x2 -- x3 ) Bitwise Exclusive-OR
+|or|      ( x1 x2 -- x3 ) Bitwise OR
+|and|     ( x1 x2 -- x3 ) Bitwise AND
+|false|   (       -- 0  ) False-Flag
+|true|    (       -- 1  ) True-Flag
+|clz|     (    x1 -- u  ) Count leading zeroes
+------------------------------------------------------------------------------
+                                                                    *dict_01.07*
+Single Number Math~
+|u/mod|     (       u1 u2 -- u3 u4 ) 32/32 = 32 rem 32 Div u1/u2=u4 rem u3
+|/mod|      (       n1 n2 -- n3 n4 ) n1/n2 = n4 rem n3
+|/|         (       n1 n2 -- n3    ) n1/n2 = n3
+|star|[*]   ( u1 n1 u2 n3 -- u3 n3 ) 32*32 = 32 Multiplication
+|min|       (       n1 n2 -- n1 n2 ) Keeps smaller of top two items
+|max|       (       n1 n2 -- n1 n2 ) Keeps greater of top two items
+|umin|      (       u1 u2 -- u1 u2 ) Keeps unsigned smaller
+|umax|      (       u1 u2 -- u1 u2 ) Keeps unsigned greater
+|2-|        (       u1 n1 -- u1 n2 ) Subtracts two, optimized
+|1-|        (       u1 n1 -- u2 n2 ) Subtracts one, optimized
+|2+|        (       u1 n1 -- u2 n2 ) Adds two, optimized
+|1+|        (       u1 n1 -- u2 n2 ) Adds one, optimized
+|even|      (       u1 n1 -- u2 n2 ) Makes even. Adds on if uneven
+|2star|[2*] (          n1 -- n2    ) Arithmetic left-shift
+|2/|        (          n1 -- n2    ) Arithmetic righ-shift
+|abs|       (           n -- u     ) Absolute value
+|negate|    (          n1 -- n2    ) Negate
+|-|         ( u1|n1 u2|n2 -- u3|n3 ) Subtraction
+|+|         ( u1|n1 U2|n2 -- u3|n3 ) Addition
+------------------------------------------------------------------------------
+                                                                    *dict_01.08*
+Double Number Math~
+|umstar|[um*]       (         u1 u2 -- ud          ) 32*32 = 64 Multiplication
+|udstar|[ud*]       (       ud1 ud2 -- ud3         ) 64*64 = 64 Multiplication
+|udmstar|[udm*]     (       ud1 ud2 -- ud3-L ud4-H ) 64*64 = 128 Multiplication
+|um/mod|            (         ud u1 -- u2 u3       ) ud/u1 = u3 remainder u2
+|ud/mod|            (       ud1 ud2 -- ud3 ud4     ) 64/64 = 64 rem 64
+|mstar|[m*]         (         n1 n2 -- d           ) n1 * n2 = d
+|m/mod|             (          d n1 -- n2 n3       ) d/n1 = n3 remainder r2
+|d/mod|             (         d1 d2 -- d3 d4       ) d1/d2 = d4 remainder d3
+|d/|                (         d1 d2 -- d3          ) d1/d2 = d3
+|star/|[*/]         (      n1 n2 n3 -- n4          ) n1*n2/n3 = n4
+|ustar/|[u*/]       (      u1 u2 u3 -- u4          ) u1*u2/u3 = u4
+|star/mod|[*/mod]   (      n1 n2 n3 -- n4 n5       ) u1*u2/u3 = n5 remainder n4
+|ustar/mod|[u*/mod] (      u1 u2 u3 -- u4 u5       ) u1*u2/u3 = u5 remainder u4
+|d2star|[d2*]       (            d1 -- d2          ) Arithmetic left-shift
+|d2/|               (            d1 -- d2          ) Arithmetic right-shift
+|dshl|              (           ud1 -- ud2         ) Logical lt-shft, same d2*
+|dshr|              (           ud1 -- ud2         ) Logical right-shift
+|dabs|              (             d -- ud          ) Absolute value
+|dnegate|           (            d1 -- d2          ) Negate
+|d-|                ( ud1|d1 ud2|d2 -- ud2|d3      ) Subtraction
+|d+|                ( ud1|d1 ud2|d2 -- ud3|d3      ) Addition
+|s>d|               (             n -- d           ) Turn a single into a double
+------------------------------------------------------------------------------
+                                                                    *dict_01.09*
+Fixed Point Arithmetic~
+|d+|        (  df1 df2 -- df3      ) Addition of two fixpoint numbers
+|d-|        (  df1 df2 -- df3      ) Subtraction of two fixpoint numbers 
+|f/|        (  df1 df2 -- df3      ) Division of two fixpoint numbers
+|fstar|[f*] (  df1 df2 -- df3      ) Multiplication
+|hold<|     (     char --          )
+|f#S|       ( n-comma1 -- n-comma2 )    
+|f#|        ( n-comma1 -- n-comma2 )    
+|f.|        (       df --          ) Prints a fixpoint num with 32 frac digits
+|f.n|       (     df n --          ) Prints a fixpoint num with n frac digits
+|number|    (c-adr len -- 0        ) Try to convert a string to a num. 0=FAIL
+          (c-adr len -- n 1      ) 1 = success, a 32 byte num is on stack
+          (c-adr len -- n-L n-H 2) 2 = success, TWO 32 bit numbers, H and L 
+------------------------------------------------------------------------------
+                                                                    *dict_01.10*
+Single Comparisons~
+|u<=| ( u1 u2 -- flag ) u1 less-or-equal u2 
+|u>=| ( u1 u2 -- flag ) u1 greater-or-equal u2
+|u>|  ( u1 u2 -- flag ) u1 greater-than u2
+|u<|  ( u1 u2 -- flag ) u1 less-than u2
+------------------------------------------------------------------------------
+                                                                    *dict_01.11*
+Signed Comparisons~
+|<=|  ( n1 n2 -- flag ) n1 less-or-equal n2
+|>=|  ( n1 n2 -- flag ) n1 greater-or-equal n2
+|>|   ( n1 n2 -- flag ) n1 geater-than n2
+|<|   ( n1 n2 -- flag ) n1 less-than n2
+|0<|  (     n -- flag ) n less than zero
+|0<>| (     n -- flag ) n not equal to zero
+|0=|  (     n -- flag ) n equals zero
+|<>|  ( n1 n2 -- flag ) n1 not-equals n2
+|=|   ( n1 n2 -- flag ) n1 equals n2
+------------------------------------------------------------------------------
+                                                                    *dict_01.12*
+Double-Comparisons~
+|du>| ( ud1 ud2 -- flag ) ud1 greater-than ud2
+|du<| ( ud1 ud2 -- flag ) ud1 less-than u2
+|d>|  (   d1 d2 -- flag ) d1 greater-than d2
+|d<|  (   d1 d2 -- flag ) d1 less-than d2
+|d0<| (       d -- flag ) d less than zero
+|d0=| (       d -- flag ) d equals zero
+|d<>| (   d1 d2 -- flag ) d1 not-equals d2
+|d=|  (   d1 d2 -- flag ) d1 equals d2
+------------------------------------------------------------------------------
+                                                                    *dict_01.13*
+Bits: Test, Toggle, Clear and Set~
+|cbit@| ( mask c-addr -- flag ) Test bit in byte-location
+|hbit@| ( mask h-addr -- flag ) Test bit in halfword-location
+|bit@|  ( mask a-addr -- flag ) Test bit in word-location
+|cxor!| ( mask c-addr --      ) Toggle bit in byte-location
+|hxor!| ( mask h-addr --      ) Toggle bit in halfword-location
+|xor!|  ( mask a-addr --      ) Toggle bit in word-location
+|cbic!| ( mask c-addr --      ) Clear bit in halfword-location
+|hbis!| ( mask h-addr --      ) Set bit in halfword-location
+|bis!|  ( mask a-addr --      ) Set bit in word-location
+------------------------------------------------------------------------------
+                                                                    *dict_01.14*
+Memory Status~
+|unused| ( -- free_memory ) Displays memory depending on compile mode
+------------------------------------------------------------------------------
+                                                                    *dict_01.15*
+Memory Access~
+|move|           ( c-adr1 c-adr2 u -- ) Moves u Bytes in Memory
+|fill|           (       c-adr u c -- ) Fill u Bytes of Memory with value c
+|2constant| name (            ud|d -- ) Makes a double constant.
+|constant|  name (             u|n -- ) Makes a single constant.
+|2variable| name (            ud|d -- ) Makes an initialize double variable
+|variable|  name (             u|n -- ) Makes and initialized single variable.
+|nvariable| name (       n1*u|n n1 -- ) Var with n1 size, max 15 words
+|buffer:|   name (               u -- ) Creates a buffer in RAM u bytes in len
+
+|2@|  (      a-addr -- ud|d ) Fetches double number from memory
+|2!|  ( ud|d a-addr --      ) Stores double number from memory
+|@|   (      a-addr -- u|n  ) Fetches single number from memory
+|!|   (  u|n a-addr --      ) Stores single number in memory
+|+!|  (  u|n a-addr --      ) Plus Store, use to increment a var, register etc
+|h@|  (      c-addr -- char ) Fetches halfword from memory
+|h!|  ( char c-addr --      ) Add to halfword memory location
+|h+!| (  u|n a-addr --      ) Add to halfword memory location
+|c@|  (      c-addr -- char ) Fetches byte from memory
+|c!|  ( char c-addr --      ) Stores byte in memory
+|c+!| (  u|n a-addr --      ) Add to byte memory location
+------------------------------------------------------------------------------
+                                                                    *dict_01.16*
+String Routines~
+|type|    ( c-addr length --   ) Prints a string.
+|s"|    (   -- c-addr length ) Compiles string, gives back addr and len at exec
+|."|    (   --    ) Compiles a string and prints it when executed
+|(|       (   --    ) Starts stack argument comment
+|)|       (   --    ) Ends stack argument comment
+|\|       (   --    ) Starts comment until end of line
+|cr|      (   --    ) Emits line feed
+|bl|      (   -- 32 ) ASCII for Space
+|space|   (   --    ) Emts space
+|spaces|  ( n --    ) Emits n spaces if n is positive
+|compare| ( caddr-1 len-1 caddr-2 len-2 -- flag   ) Compares two strings
+|accept|  (            c-addr maxlength -- length ) Read input into a string
+------------------------------------------------------------------------------
+                                                                    *dict_01.17*
+Counted String Routines~
+|ctype|      ( cstr-addr -- ) Prints a counted string
+|c"|       ( -- cstr-addr ) Compiles counted str, gives back addr at exec
+|cexpect|    ( cstr-addr maxlength -- ) Read input into a counted string
+|count|      ( cstr-adr -- c-adr len  ) Convert counted str into addr-len str
+|skipstring| ( cstr-adr -- a-adr      ) Increases pointer to aligned end of str
+------------------------------------------------------------------------------
+                                                                    *dict_01.18*
+Pictured Numerical Output~
+|.digit| (        u -- char      ) Converts a digit to a char
+|digit|  (     char -- u t|f     ) Converts a char to a digit
+|[char]| (          -- char      ) Compiles code of following char when executed
+|char|   (          -- char      ) Gives code of following char
+|hold|   (     char --           ) Adds char to pict num out buff from the front
+|hold<|  (     char --           ) Adds char to pict num out buff from behind
+|sign|   (        n --           ) Adds a (-) to pict num out buff, if n is neg
+|#S|     (   ud1|d1 -- 0 0       ) Add rem digs from dble len num to out buff
+|f#S|    ( n-comma1 -- n-comma2  ) Adds 32 comma-digits to number output
+|#|      (   ud1|d1 -- ud2|d2    ) Add one dig from dble len num to out buff
+|f#|     ( n-comma1 -- c-adr len ) Adds one comma-digit to num out buff
+|#>|     (     ud|d -- c-adr len ) Drops dle-len num, finishes pic out, rdy type
+|<#|     (          --           ) Prepare pictured number output buffer
+|u.|     (        u --           ) Print unsigned single number
+|.|      (        n --           ) Print single number
+|ud.|    (       ud --           ) Print unsigned double number
+|d.|     (        d --           ) Print double number
+------------------------------------------------------------------------------
+                                                                    *dict_01.19*
+Deep Insights~
+|words| (      --      ) Prints list of defined words and properties
+|list|  (      --      ) Prints all defined words. From; dissasembler-mx.txt
+|.s|    ( many -- many ) Prints stack contents, signed
+|u.s|   ( many -- many ) Prints stack contents, unsigned
+|h.s|   ( many -- many ) Prints stack contents, unsigned, hex
+|hex.|  (    u --      ) Prints 32 bit unsigned in hex base, needs emit only
+------------------------------------------------------------------------------
+                                                                    *dict_01.20*
+User Input and Interpretation~
+|query|     (             --            ) Fetches user input to input buffer
+|tib|       (             -- cstr-addr  ) Input buffer
+|current-source| (        -- addr       ) Double-Variable which contains source
+|tsource|   (  c-addr len --            ) Current source
+|source|    (             -- c-addr len ) Current source
+|>in|       (             -- addr       ) Var with current offset into source
+|token|     (             -- c-addr len ) Cuts one token out of input buffer
+|parse|     ( char        -- c-addr len ) Cuts anything delimited by char
+|evaluate|  ( any adr len -- any        ) Interpret given string
+|interpret| (         any -- any        ) Execute, compile, fold, optimize...
+|quit|      ( many -- ) ( R: many --    ) Resets Stacks
+|hook-quit| (             -- a-addr     ) Hook for changing the inner quit loop
+------------------------------------------------------------------------------
+                                                                    *dict_01.21*
+Dictionary Expansion~
+|align|          (        --        ) Aligns dict pointer
+|aligned|        ( c-addr -- a-addr ) Advancs to next aligned address
+|cell+|          (      x -- x+4    ) Add size of one cell
+|cells|          (      n -- 4*n    ) Calculate size of n cells
+|allot|          (      n --        ) Tries to adv Dict Ptr n bytes, or aborts
+|here|           ( -- a-addr|c-addr ) Gives cur pos in Dict
+|,|              (    u|n --        ) Appends a single number to dict
+|><,|            (    u|n --        ) Rev h and l-halword, appends to dict
+|h,|             (    u|n --        ) Apends a halfword to dict
+|compiletoram?|  (        --?       ) Currently compiling into ram?
+|compiletoram|   (        --        ) Makes ram the target for compiling
+|compiletoflash| (        --        ) makes flash memory the target for compiling
+|forgetram|      (        --        ) Forget dfinitions in ram without a reset
+------------------------------------------------------------------------------
+                                                                    *dict_01.22*
+Speciality!~
+|string,|         ( c-addr len -- ) Inserts str of max 255 chars w/o runtime
+|literal,|        (        u|n -- ) Compiles a literal with runtime
+|inline,|         (     a-addr -- ) Inlines teh chosen subroutine
+|call,|           ( a    -addr -- ) Compiles a call to a subroutine
+|jump,| ( Hole-for-Opcode Destination Bitmask ) Writes an unconditional jump to
+                                              a-addr-Destination with the given
+                                              Bitmask as Opcode into halfword
+                                              sized h-addr-Hole
+|cjump,| ( Hole-for-Opcode Destination Bitmask ) Writes a conditional jump to
+                                               a-addr-Destination with the
+                                               given Bitmask as Opcode into the
+                                               halfword sized h-addr-Hole
+|ret,|            (        --             ) Compiles a ret opcode
+|flashvar-here|   (        -- a-addr      ) Gives current RAM management pointer
+|dictionarystart| (        -- a-addr      ) Current entry point for dict search
+|dictionarynext|  ( a-addr -- a-addr flag ) Scans dict chain, rets true if end
+------------------------------------------------------------------------------
+                                                                    *dict_01.23*
+Special Words Depending on MCU Capablilities~
+|c,|               (  char -- ) Appends a byte to dict. NOT AVAILABLE ALL MCU's.
+|halign|           (       -- ) Makes a dict Pointer even, if uneven
+|movwmovt,|        ( x Reg -- ) Generate a movw/movt, get x into any reg (M3/4)
+|registerliteral,| ( x Reg -- ) Generate shortest possible sequence to get
+                              x into given low Register. On M0: A movs-
+                              lsls-adds... sequence M3/M4: movs / movs-
+                              mvns / movw / movw-movt
+|12bitencoding|    ( x -- x F | btmsk T ) Can x be encoded as 12-bit immediate?
+|eraseflash|       ( a-addr -- ) Starts everything after -- Flash Dict -- Clears
+                               Ram, Restarts Forth. Doesn't erase Mecrisp
+|eraseflashfrom|   ( a-addr -- ) Starts erasing at this address. Clears Ram.
+                               Restarts Forth
+|flashpageerase|   ( a-addr -- ) Erase one 1k flash page only. Care: No Reset,
+                               no dict reinitialisation.
+|hflash!|          ( u|n a-addr -- ) Writes halfword to flash
+------------------------------------------------------------------------------
+                                                                    *dict_01.24*
+Flags and Inventory~
+|smudge|        (      -- ) Makes current def visible, burns collected flags
+                          to flash, takes care of proper ending
+|inline|        (      -- ) Takes code of a word, puts it in place of a call
+                          to this word
+|immediate|     (      -- ) Will not compile word into dict but execute the
+                          word immediately
+|compileonly|   (      -- ) Makes current definition compileonly
+|setflags|      ( char -- ) Sets Flags with a mask. This isn't immediate
+|(create)| name ( --      ) Don't use: use <build...does>!
+|find| ( c-addr len -- a-addr flags ) Searches for a string in Dict. Gives
+                                    back flags, which are different to ANS!
+------------------------------------------------------------------------------
+                                                                    *dict_01.25*
+Folding~
+|0-foldable| ( -- ) Current word becomes foldable with 0 constants
+|1-foldable| ( -- ) 1 constant
+|3-foldable| ( -- ) 3 constant
+|4-foldable| ( -- ) 4 constant
+|5-foldable| ( -- ) 5 constant
+|6-foldable| ( -- ) 6 constant
+|7-foldable| ( -- ) 7 constant
+------------------------------------------------------------------------------
+                                                                    *dict_01.26*
+Compiler Essentials~
+|execute|     ( a-addr --        ) Calls subroutine
+|recurse|     (        --        ) Lets teh current definition call itself
+|'|   name    (        -- a-addr ) Find name in dict gives back exec-addr
+|[']| name    (        -- a-addr ) Tick compiles the exec-addr fnd word as
+|postpone|    (        --        ) See Glossary
+|<builds|     (        --        ) Dict header, reserves space for special cell
+|does>|       (        --        ) Executes: ( -- a-addr ) Gives addr to data
+|create| name (        --        ) Do not use: Use <build...does>!
+|state|       (        -- a-addr ) Address of state variable
+|]| ( -- ) Switch to compile state
+|[| ( -- ) Switch to execute state
+|;| ( -- ) Finishes new definition
+|:| ( -- ) Opens new definition
+-----------------------------------------------------------------------------
+                                                                    *dict_01.27*
+Decisions~
+|then| (      -- ) This is the common flag if ... [else ...] then structure
+|else| (      -- ) Flag if ... [else ...] then
+|if|   ( flag -- ) Structure
+-----------------------------------------------------------------------------
+                                                                    *dict_01.28*
+Case~
+|case|    (      n -- n ) Begins case structure
+|of|      (      m --   ) Compares m with n, choose this if n=m
+|?of|     ( n flag --   ) Flag-of, for custom comparisons
+|endof|   (        --   ) End of one possibility
+|endcase| (      n --   ) Ends case structure, discards n
+-----------------------------------------------------------------------------
+                                                                    *dict_01.29*
+Indefinite Loops~
+|repeat| (      -- ) Finish of a middle-flag-checking loop
+|while|  ( flag -- ) Check a flag in the middle of a loop
+|until|  ( flag -- ) Begin ... flag until loops as long flag is true
+|again|  (      -- ) Begin ... again is an endless loop
+|begin|  (      -- )
+-----------------------------------------------------------------------------
+                                                                    *dict_01.30*
+Definite Loops~
+|i| ( -- u|n ) Gives innermost loop index.
+|j| ( -- u|n ) Gives second loop index. 
+|k| ( -- u|n ) Gives third loop index.
+|unloop| ( R: old-limit old-index -- ) Drops innermost loop structure, pops
+                                     back old loop structures to loop regs
+
+|exit|   (     -- ) Returns from current definition. Compiles a ret opcode.
+|leave|  (     -- ) (R: old-limit old-index -- ) Leaves current innermost
+                                               loop promptly.
+
+|+loop|  ( u|n -- ) (R:unchanged  | old-limitold-index  -- ) Choose increment
+|loop|   (     -- ) (R: unchanged | old-limit old-index -- ) Increments 1
+
+|?do|   ( Limit index -- ) ( R: unchanged | -- old-limit old-index ) Begins
+       a loop if limit and index are not equal.
+
+|do|    ( Limit Index -- ) ( R: -- old-limit old-index ) Begins a loop.
+-----------------------------------------------------------------------------
+                                                                    *dict_01.31*
+Common Hardware Access~
+|reset|          ( --        ) Reset on hardware level.
+|dint|           ( --        ) Disables Interrupts.
+|eint|           ( --        ) Enables Interrupts.
+|nop|            ( --        ) No Operation. Hook for unused handlers!
+|ipsr|           ( -- ipsr   ) Interrupt Program Status Register.
+|unhandled|      ( --        ) Message for unhandled interrupts.
+|irq-systick|    ( -- a-addr ) Memory locations for IRQ-Hooks
+|irq-fault|      ( -- a-addr ) For all faults.
+|irq-collection| ( -- a-addr ) Collection of all unhandled interrupts.
+
+==============================================================================
+                                                                 *example_01.01*
+Terminal IO~
+
+------------------------------------------------------------------------------
+                                                                         *emit?*
+emit? ( -- Flag )~
+Ready to send a character?
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *key?*
+key? ( -- Flag )~
+Check if a key is waiting
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *key*
+key  ( -- Flag )~
+Waits for and fetches the pressed key
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *emit*
+emit ( Char -- )~
+Emits a character.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                    *hook-emit?*
+hook-emit? ( -- a-addr )~
+Hooks for redirecting
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                     *hook-key?*
+hook-key? ( -- a-addr )~
+terminal IO
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                      *hook-key*
+hook-key ( -- a-addr )~
+on the fly
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                     *hook-emit*
+hook-emit ( -- a-addr )~
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                *serial-emit?*
+serial-emit? ( -- Flag )~
+Serial interface
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                   *serial-key?*
+serial-key? ( -- Flag )~
+terminal routines
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                    *serial-key*
+serial-key ( -- Char )~
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                   *serial-emit*
+serial-emit ( Char -- )~
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                    *hook-pause*
+hook-pause ( -- a-addr )~
+Hook for a multitasker
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *pause*
+pause ( -- )~
+Task switch, none for default
+
+TODO
+
+------------------------------------------------------------------------------
+
+==============================================================================
+                                                                 *example_01.02*
+Character Manipulation~
+
+[char] is a dupulicate, see Pictured Numerical Output --> |[char]|
+
+char is a duplicate, see Pictured Numerical Output    --> |char|
+
+emit is a duplicate, see Terminal IO                  --> |emit|
+
+==============================================================================
+                                                                 *example_01.03*
+Single-Jugglers~
+
+------------------------------------------------------------------------------
+                                                                         *depth*
+depth ( -- +n )~
+Gives number of single-cell stack items
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *nip*
+nip ( x1 x2 -- x2 )~
+Drop the first item below the top of the stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *drop*
+drop ( x -- )~
+Drop the first item on the top of stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *rot*
+rot ( x1 x2 x3 -- x2 x3 x1 )~
+Move the third item in the stack to the top
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *-rot*
+-rot ( x1 x2 x3 -- x3 x1 x2 )~
+Move the top item to be the third item
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *swap*
+swap ( x1 x2 -- x2 x1 )~
+Switch the order of the top two stack items
+
+Example:
+ 
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *tuck*
+tuck ( x1 x2 -- x2 x1 x2 )~
+Copy the top item to be the third
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *over*
+over ( x1 x2 -- x1 x2 x1 )~
+Copy second item to the top
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *?dup*
+?dup ( x -- 0 | x x )
+
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *dup*
+dup ( x -- x x )~
+Copy the top item to be the second
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *pick*
+pick ( ... xi+1 xi ... x0 i -- ... x1 x0 xi )~
+Copy an element X levels down the stack to the top of the stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *>r*
+
+>r ( x -- )~
+>( R: -- x ) Push to Return Stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *r>*
+r> ( -- x )~
+( R: x -- ) Pull from Return Stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *r@*
+r@ ( -- x )~
+( R: x -- x ) Copy from Return Stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *rdrop*
+rdrop ( -- )~
+( R: x -- ) Drop top item from Return Stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *rdepth*
+rdepth ( -- +n )~
+Gives number of return stack items
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *rpick*
+rpick ( i -- xi ) R: ( ... xi ... x0 -- ... xi ... x0 )~
+Copy an element x levels down the return stack to the top of the stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *roll*
+
+roll ( xu xu-1 ... x0 u -- xu-1 ... x- xu )~
+Remove u. Rotate u+1 items on the top of the stack.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *-roll*
+-roll ( xu-1 ... x0 xu u - xu xu-1 ... x0 )~
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.04*
+Double-Jugglers~
+
+------------------------------------------------------------------------------
+                                                                          *2nip*
+2nip ( x1 x2 x3 x4 -- x3 x4 )~
+Delete items 3 and 4 from the stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *2drop*
+2drop ( x1 x2 -- )~
+Delete top 2 items from the stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *2rot*
+2rot ( x1 x2 x3 x4 x5 x6 -- x3 x4 x5 x6 x1 x2 )~
+Move the 5th and 6th items to the top of the stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *2-rot*
+2-rot ( x1 x2 x3 x4 x5 x6 -- x5 x6 x1 x2 x3 x4 )~
+Move the top two items to the 5th and 6th items
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *2swap*
+2swap ( x1 x2 x3 x4 -- x3 x4 x1 x2 )~
+Swap the items 1 and 2 with items 3 and 4
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *2tuck*
+2tuck ( x1 x2 x3 x4 -- x3 x4 x1 x2 x3 x4 )~
+Copy the top two items to be the 5th and 6th items on the stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *2over*
+2over ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 )~
+Copy the 3rd and 4th itmes to the top of the stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *2dup*
+2dup ( x1 x2 -- x1 x2 x1 x2 )  ~
+Copy the top two items to the 3rd and 4th items  on the stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *2>r*
+2>r ( x1 x2 -- ) ( R: -- x1 x2)~
+Copy the top two items of the stack to the Return stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *2r>*
+2r> ( -- x1 x2 ) ( R: x1 x2 -- )~
+Copy the top two items on the Return stack to the stack
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *2r@*
+2r@ ( -- x1 x2 ) ( R: x1 x2 -- x1 x2 )~
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *2rdrop*
+2rdrop ( -- ) ( R: x1 x2 -- )~
+Drop the top two items from the Return stack
+
+TODO
+
+==============================================================================
+                                                                 *example_01.05*
+Stack pointers~
+
+------------------------------------------------------------------------------
+                                                                           *sp@*
+sp@ ( -- a-addr )~
+Fetch data stack pointer
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *sp!*
+sp! ( a-addr -- )~
+Store data stack pointer
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *rp@*
+rp@ ( -- a-addr )~
+Fetch return stack pointer
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *rp!*
+rp! ( a-addr -- )~
+Store return stack pointer
+
+TODO
+
+------------------------------------------------------------------------------
+  
+==============================================================================
+                                                                 *example_01.06*
+Logic~
+
+------------------------------------------------------------------------------
+                                                                       *arshift*
+arshift ( x1 u -- x2 )~
+Arithmetic right-shift of u bit-places
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *rshift*
+rshift ( x1 u -- x2 )~
+Logical right-shift of u bit-places
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *lshift*
+lshift ( x1 u -- x3 )~
+Logical left-shift of u bit-places
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *shr*
+shr ( x1 -- x2 )~
+Logical right-shift of one bit-place
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *shl*
+shl ( x1 -- x2 )~
+Logical left-shift of one bit-place
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *ror*
+ror ( x1 -- x2 )~
+Logical right-rotation of one bit-place
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *rol*
+rol ( x1 -- x2 )~
+Logical left-rotation of one bit-place
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *bic*
+bic ( x1 x2 -- x3 )~
+Bit clear, identical to "not and"
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *not*
+not ( x1 -- x2 )~
+Invert all bits
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *xor*
+xor ( x1 x2 -- x3 )~
+Bitwise Exclusive-OR
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *or*
+or ( x1 x2 -- x3 )~
+Bitwise OR
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *and*
+and ( x1 x2 -- x3 )~
+Bitwise AND
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *false*
+false ( -- 0 )~
+False-Flag
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *true*
+true ( --- 1 )~
+True-Flag
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *clz*
+clz ( x1 -- u )~
+Count leading zeroes
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.07*
+Single Number Math~
+
+------------------------------------------------------------------------------
+                                                                         *u/mod*
+u/mod ( u1 u2 -- u3 u4 )~
+32/32 = 32 rem 32 Division u1/u2=u4 remainder u3
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           */mod*
+/mod ( n1 n2 -- n3 n4 )~
+n1/n2 = n4 rem n3
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             */*
+/    ( n1 n2 -- n3 )~
+n1/n2 = n3
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *star*
+*    ( u1 n1 u2 n3 -- u3 n3 )~
+*32*32 = 32 Multiplication
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *min*
+min ( n1 n2 -- n1 n2 )~
+Keeps smaller of top two items
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *max*
+max ( n1 n2 -- n1 n2 )~
+Keeps greater of top two items
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *umin*
+umin ( u1 u2 -- u1 u2 )~
+Keeps unsigned smaller
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *umax*
+umax ( u1 u2 -- u1 u2 )~
+Keeps unsigned greater
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *2-*
+2- ( u1 n1 -- u1 n2 )~
+Subtracts two, optimized
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *1-*
+1- ( u1 n1 -- u2 n2 )~
+Subtracts one, optimized
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *2+*
+2+ ( u1 n1 -- u2 n2 )~
+Adds two, optimized
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *1+*
+1+ ( u1 n1 -- u2 n2 )~
+Adds one, optimized
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *even*
+even ( u1 n1 -- u2 n2 )~
+Makes even. Adds on if uneven
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *2star*
+2* ( n1 -- n2 )~
+Arithmetic left-shift
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *2/*
+2/ ( n1 -- n2 )~
+Arithmetic righ-shift
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *abs*
+abs ( n -- u )~
+Absolute value
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *negate*
+negate ( n1 -- n2 )~
+Negate
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *-*
+- ( u1|n1 u2|n2 -- u3|n3 )~
+Subtraction
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *+*
++ ( u1|n1 U2|n2 -- u3|n3 )~
+Addition
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.08*
+Double Number Math~
+
+------------------------------------------------------------------------------
+                                                                        *umstar*
+um* ( u1 u2 -- ud )~
+32*32 = 64 Multiplication
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *udstar*
+ud* ( ud1 ud2 -- ud3 )~
+64*64 = 64 Multiplication
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                       *udmstar*
+udm* ( ud1 ud2 -- ud3-Low ud4-High )~
+64*64 = 128 Multiplication
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *um/mod*
+um/mod ( ud u1 -- u2 u3 )~
+ud/u1 = u3 remainder u2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *ud/mod*
+ud/mod ( ud1 ud2 -- ud3 ud4 )~
+64/64 = 64 rem 64 Division ud1/ud2 = ud4 rem ud3
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *mstar*
+m* ( n1 n2 -- d )~
+n1 * n2 = d
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *m/mod*
+m/mod ( d n1 -- n2 n3 )~
+d/n1 = n3 remainder r2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *d/mod*
+d/mod ( d1 d2 -- d3 d4 )~
+d1/d2 = d4 remainder d3
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *d/*
+d/ ( d1 d2 -- d3 )~
+d1/d2 = d3
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *star/*
+*/ ( n1 n2 n3 -- n4 )~
+n1*n2/n3 = n4
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *ustar/*
+u*/ ( u1 u2 u3 -- u4 )~
+u1*u2/u3 = u4
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                      *star/mod*
+*/mod ( n1 n2 n3 -- n4 n5 )~
+u1*u2/u3 = n5 remainder n4
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                     *ustar/mod*
+u*/mod ( u1 u2 u3 -- u4 u5 )~
+u1*u2/u3 = u5 remainder u4
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *d2star*
+d2* ( d1 -- d2 )~
+Arithmetic left-shift
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *d2/*
+d2/ ( d1 -- d2 )~
+Arithmetic right-shift
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *dshl*
+dshl ( ud1 -- ud2 )~
+Logical left-shift, same as d2*
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *dshr*
+dshr ( ud1 -- ud2 )~
+Logical right-shift
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *dabs*
+dabs ( d -- ud )~
+Absolute value
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                       *dnegate*
+dnegate ( d1 -- d2 )~
+Negate
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *d-*
+d- ( ud1|d1 ud2|d2 -- ud2|d3 )~
+Subtraction
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *d+*
+d+ ( ud1|d1 ud2|d2 -- ud3|d3 )~
+Addition
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *s>d*
+s>d ( n -- d )~
+Turn a single into a double
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.09*
+Fixed Point Arithmetic~
+
+------------------------------------------------------------------------------
+                                                                            
+d+ is a duplicate, see Double Number Math --> |d+|
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           
+d- is a duplicate, see Double Number Math --> |d-|
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *f/*
+f/ ( df1 df2 -- df3 )~
+Division of two fixpoint numbers
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *fstar*
+f* ( df1 df2 -- df3 )~
+Multiplication
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          
+hold< is a duplicate, see Pictured Numerical Output --> |hold<|
+TODO
+
+------------------------------------------------------------------------------
+                                                                         
+f#S is a duplicate, see Pictured Numerical Output --> |f#s|
+
+TODO
+
+------------------------------------------------------------------------------
+                            
+f# is a duplicate, see Pictured Numerical Output --> |f#|
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *f.*
+f. ( df -- )~
+Prints a fixpoint number with 32 fractional digits
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *f.n*
+f.n ( df n -- )~
+Prints a fixpoint number with n fractional digits
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *number*
+number ( c-addr length -- 0 ) \ hold< f#s f# are duplicates
+                                        \ see Pictured Numerical Output
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.10*
+Single Comparisons~
+
+------------------------------------------------------------------------------
+                                                                           *u<=*
+u<= ( u1 u2 -- flag )~
+u1 less-or-equal u2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *u>=*
+u>= ( u1 u2 -- flag )~
+u1 greater-or-equal u2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *u>*
+u> ( u1 u2 -- flag )~
+u1 greater-than u2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *u<*
+u< ( u1 u2 -- flag )~
+u1 less-than u2
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.11*
+Signed Comparisons~
+
+------------------------------------------------------------------------------
+                                                                            *<=*
+<= ( n1 n2 -- flag )~
+n1 less-or-equal n2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *>=*
+>= ( n1 n2 -- flag )~
+>n1 greater-or-equal n2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *>*
+> ( n1 n2 -- flag )~
+>n1 geater-than n2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *<*
+< ( n1 n2 -- flag )~
+n1 less-than n2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *0<*
+0< ( n -- flag )~
+n less than zero
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *0<>*
+0<> ( n -- flag )~
+n not equal to zero
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *0=*
+0= ( n -- flag )~
+n equals zero
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *<>*
+<> ( n1 n2 -- flag )~
+n1 not-equals n2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *=*
+= ( n1 n2 -- flag )~
+n1 equals n2
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.12*
+Double-Comparisons~
+
+------------------------------------------------------------------------------
+                                                                           *du>*
+du> ( ud1 ud2 -- flag )~
+ud1 greater-than ud2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *du<*
+du< ( ud1 ud2 -- flag )~
+ud1 less-than u2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *d>*
+d> ( d1 d2 -- flag )~
+d1 greater-than d2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *d<*
+d< ( d1 d2 -- flag )~
+d1 less-than d2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *d0<*
+d0< ( d -- flag )~
+d less than zero
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *d0=*
+d0= ( d -- flag )~
+d equals zero
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *d<>*
+d<> ( d1 d2 -- flag )~
+d1 not-equals d2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *d=*
+d= ( d1 d2 -- flag )~
+d1 equals d2
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.13*
+Bits: Test, Toggle, Clear and Set~
+
+------------------------------------------------------------------------------
+                                                                         *cbit@*
+cbit@ ( mask c-addr -- flag )~
+Test bit in byte-location
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *hbit@*
+hbit@ ( mask h-addr -- flag )~
+Test bit in halfword-location
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *bit@*
+bit@  ( mask a-addr -- flag )~
+Test bit in word-location
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *cxor!*
+cxor! ( mask c-addr -- )~
+Toggle bit in byte-location
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *hxor!*
+hxor! ( mask h-addr -- )~
+Toggle bit in halfword-location
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *xor!*
+xor! ( mask a-addr -- )~
+Toggle bit in word-location
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *cbic!*
+cbic! ( mask c-addr -- )~
+Clear bit in halfword-location
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *hbis!*
+hbis! ( mask h-addr -- )~
+Set bit in halfword-location
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *bis!*
+bis! ( mask a-addr -- )~
+Set bit in word-location
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.14*
+Memory Status~
+
+------------------------------------------------------------------------------
+                                                                        *unused*
+unused ( -- free_memory )~
+Displays memory depending on compile mode (Ram or Flash)
+
+
+==============================================================================
+                                                                 *example_01.15*
+Memory Access~
+
+------------------------------------------------------------------------------
+                                                                          *move*
+move ( c-addr1 c-addr2 u -- )~
+Moves u Bytes in Memory
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *fill*
+fill ( c-addr u c -- )~
+Fill u Bytes of Memory with value c
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                     *2constant*
+2constant name ( ud|d -- )~
+Makes a double constant.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                      *constant*
+constant name ( u|n -- )~
+Makes a single constant. i.e. "$1024 constant one-kb"
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                     *2variable*
+2variable name ( ud|d -- )~
+Makes an initialize double variable
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                      *variable*
+variable name ( u|n -- )~
+Makes and initialized single variable. i.e. "0 variable one-kb"
+                           
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                     *nvariable*
+nvariable name ( n1*u|n n1 -- )~
+Makes an initialized variable with specified size of n1, Maximum is 15 words
+                                  
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                       *buffer:*
+buffer: name ( u -- )~
+Creates a buffer in RAM u bytes in length
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *2@*
+2@ ( a-addr -- ud|d )~
+Fetches double number from memory
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *2!*
+2! ( ud|d a-addr --- )~
+Stores double number from memory
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *@*
+@ ( a-addr -- u|n )~
+Fetches single number from memory
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *!*
+! ( u|n a-addr -- )~
+Stores single number in memory
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *+!*
++! ( u|n a-addr   -- )~
+Plus Store, use to inrement a variable, register etc
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *h@*
+h@ ( c-addr -- char )~
+Fetches halfword from memory
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *h!*
+h! ( char c-addr -- )~
+Add to halfword memory location
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *h+!*
+h+! ( u|n a-addr -- )~
+Add to halfword memory location
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *c@*
+c@ ( c-addr -- char )~
+Fetches byte from memory
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *c!*
+c! ( char c-addr )~
+Stores byte in memory
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *c+!*
+c+! ( u|n a-addr -- )~
+Add to byte memory location
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.16*
+String Routines~
+------------------------------------------------------------------------------
+                                                                          *type*
+type ( c-addr length -- )~
+Prints a string.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *s"*
+s" ( -- c-addr length )~
+Compiles a string and gives back its addresss and length when executed
+                          
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *."*
+." ( -- )~
+Compiles a string and prints it when executed
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *(*
+( ( -- )~
+Starts stack argument comment
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *)*
+) ( -- )~
+Ends stack argument comment
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *\*
+\ ( -- )~
+Starts comment until end of line
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *cr*
+cr ( -- )~
+Emits line feed
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *bl*
+bl ( -- 32 )~
+ASCII for Space
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *space*
+space ( -- )~
+Emts space
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *spaces*
+spaces ( n -- )~
+Emits n spaces if n is positive
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                       *compare*
+compare ( caddr-1 len-1 caddr-2 len-2 -- flag )~
+Compares two strings
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *accept*
+accept ( c-addr maxlength -- length )~
+Read input into a string
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.17*
+Counted String Routines~
+------------------------------------------------------------------------------
+                                                                         *ctype*
+ctype ( cstr-addr -- )~
+Prints a counted string
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *c"*
+c" ( -- cstr-addr )~
+Compiles a counted string and gives back its adddress when executed
+                      
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                       *cexpect*
+cexpect ( cstr-addr maxlength -- )~
+Read input into a counted string
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *count*
+count ( cstr-addr -- c-addr length )~
+Convert counted string into addr-length string
+                                       
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                    *skipstring*
+skipstring ( cstr-addr -- a-addr )~
+Increases the pointer to the aligned end of the string
+                                     
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.18*
+Pictured Numerical Output~
+------------------------------------------------------------------------------
+                                                                        *.digit*
+.digit ( u -- char )~
+Converts a digit to a char
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *digit*
+digit ( char -- u true | false )~
+Converts a char to a digit
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *[char]*
+[char] ( -- char )~
+Compiles code of following char when executed
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *char*
+char ( -- char )~
+Gives code of following char
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *hold*
+hold ( char -- )~
+Adds character to pictured number output buffer from the front
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *hold<*
+hold< ( char -- )~
+Adds character to pictured number output buffer from behind
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *sign*
+sign ( n -- )~
+Adds a minus sign to pictured number output buffer, if n is negative
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *#S*
+#S ( ud1|d1 -- 0 0 )~
+Add all remaining digits from the double length number to outout buffer
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *f#S*
+f#S ( n-comma1 -- n-comma2 )  ~
+Adds 32 comma-digits to number output
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *#*
+# ( ud1|d1 -- ud2|d2 )~
+#Add one digit from the double length number to output buffer
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *f#*
+f# ( n-comma1 -- c-addr len )~
+Drops double-length number and finishes pictured numeric output ready for type
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *#>*
+#> ( ud|d -- c-addr len )~
+Drops double-length number and finishes pictured output ready for type
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *<#*
+<# ( -- )~
+Prepare pictured number output buffer
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *u.*
+u. ( u -- )~
+Print unsigned single number
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *.*
+. ( n -- )~
+Print single number
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *ud.*
+ud. ( ud -- )~
+Print unsigned double number
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *d.*
+d. ( d -- )~
+Print double number
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.19*
+Deep Insights~
+------------------------------------------------------------------------------
+                                                                         *words*
+words ( -- )~
+Prints list of defined words and properties
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *list*
+list ( -- )~
+Prints all defined words. From; dissasembler-mx.txt
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *.s*
+.s ( many -- many )~
+Prints stack contents, signed
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *u.s*
+u.s ( many -- many )~
+Prints stack contents, unsigned
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *h.s*
+h.s ( many -- many )~
+Prints stack contents, unsigned, hex
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *hex.*
+hex. ( u -- )~
+Prints 32 bit unsigned in hex base, needs emit only. This is independent of
+number subsystem
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.20*
+User Input and Interpretation~
+------------------------------------------------------------------------------
+                                                                         *query*
+query ( -- )~
+Fetches user input to input buffer
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *tib*
+tib ( -- cstr-addr )~
+Input buffer
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                *current-source*
+current-source ( -- addr )  ~
+Double-Variable which contains source
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                       *tsource*
+tsource ( c-addr len -- )~
+Current source
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *source*
+source ( -- c-addr len )~
+Current source
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *>in*
+>in ( -- addr )~
+>Variable with current offset into source
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *token*
+token ( -- c-addr len )~
+Cuts one token out of input buffer
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *parse*
+parse ( char -- c-addr len )~
+Cuts anything delimited by char out of input buffer 
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                      *evaluate*
+evaluate ( any addr len -- any )~
+Interpret given string
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                     *interpret*
+interpret ( any -- any )~
+Execute, compile, fold, optimize...
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *quit*
+quit ( many -- )~
+( R: many -- ) Resets Stacks
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                     *hook-quit*
+hook-quit ( -- a-addr )~
+Hook for changing the inner quit loop
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.21*
+Dictionary Expansion~
+------------------------------------------------------------------------------
+                                                                         *align*
+align ( -- )~
+Aligns dict pointer
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                       *aligned*
+aligned ( c-addr -- a-addr )~
+Advancs to next aligned address
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *cell+*
+cell+ ( x -- x+4 )~
+Add size of one cell
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *cells*
+cells ( n -- 4*n )~
+Calculate size of n cells
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *allot*
+allot ( n -- )~
+Tries to advance dict Pointer by n bytes, aborts, if not enough space
+available
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *here*
+here ( -- a-addr|c-addr )~
+Gives current position in dict
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *,*
+, ( u|n -- )~
+Appends a single number to dict
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *><,*
+><, ( u|n -- )~
+>Reverses high and low-halword, then appends it to dict
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *h,*
+h, ( u|n -- )~
+Apends a halfword to dict
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                 *compiletoram?*
+compiletoram? ( --? )~
+Currently compiling into ram?
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                  *compiletoram*
+compiletoram ( -- )~
+Makes ram the target for compiling
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                *compiletoflash*
+compiletoflash ( -- )~
+makes flash memory the target for compiling
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                     *forgetram*
+forgetram ( -- )~
+Forget dfinitions in ram without a reset
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.22*
+Speciality!~
+------------------------------------------------------------------------------
+                                                                       *string,*
+string, ( c-addr len -- )~
+Inserts a string of maximum 255 characters without runtime
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                      *literal,*
+literal, ( u|n -- )~
+Compiles a literal with runtime
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                       *inline,*
+inline, ( a-addr -- )~
+ Inlines teh chosen subroutine
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *call,*
+call, ( a-addr -- )~
+Compiles a call to a subroutine
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *jump,*
+jump, ( Hole-for-Opcode Destination Bitmask )~
+Writes an unconditional jump to a-addr-Destination with the given Bitmaks as
+Opcode into halfword sized h-addr-Hole
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *cjump,*
+cjump, ( Hole-for-Opcode Destination Bitmask )~
+Writes a conditional jump to a-addr-Destination with the given Bitmask as
+Opcode into the halfword sized h-addr-Hole
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *ret,*
+ret, ( -- )~
+Compiles a ret opcode
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                 *flashvar-here*
+flashvar-here ( -- a-addr )~
+Gives current RAM management pointer
+
+TODO
+
+------------------------------------------------------------------------------
+                                                               *dictionarystart*
+dictionarystart ( -- a-addr )~
+Current entry point for dict search
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                *dictionarynext*
+dictionarynext ( a-addr -- a-addr flag )~
+Scans dict chain and returns true if end is reached
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.23*
+Special Words Depending on MCU Capablilities~
+------------------------------------------------------------------------------
+                                                                            *c,*
+c, ( char -- )~
+Appends a byte to dict. NOT AVAILABLE ON ALL MCU's. Check with ' c, or
+just look in 'words'
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *halign*
+halign ( -- )~
+Makes a dict Pointer even, if uneven
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                     *movwmovt,*
+movwmovt, ( x Register -- )~
+Generate a movw/movt-Sequence to get x into any Register. M3/M4 only
+
+TODO
+
+------------------------------------------------------------------------------
+                                                              *registerliteral,*
+registerliteral, ( x Register -- )~
+Generate shortest possible sequence to get x into given low Register. On M0:
+A movs-lsls-adds... sequence M3/M4: movs / movs-mvns / movw /movw-movt
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                 *12bitencoding*
+12bitencoding ( x -- x false | bitmask true )~
+Can x be encoded as 12-bit immediate?
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                    *eraseflash*
+eraseflash ( a-addr -- )~
+Starts everything after -- Flash dict -- Clears Ram, Restarts Forth,
+Does not erase Mecrisp-Stellaris
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                *eraseflashfrom*
+eraseflashfrom ( a-addr -- )~
+Starts erasing at this address. Clears Ram. Restarts Forth
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                *flashpageerase*
+flashpageerase ( a-addr -- )~
+Erase one 1k flash page only. Take care: No Reset, no dict
+reinitialisation
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                       *hflash!*
+hflash! ( u|n a-addr -- )~
+Writes halfword to flash
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.24*
+Flags and Inventory~
+------------------------------------------------------------------------------
+                                                                        *smudge*
+smudge ( -- )~
+Makes current definition visible, burns collected flags to flash and takes
+care of proper ending
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *inline*
+inline ( -- )~
+Takes teh code of a word, and puts it in place of a call to this word
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                     *immediate*
+immediate ( -- )~
+Will not compile this word into the dict but execute the word
+immediately
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                   *compileonly*
+compileonly ( -- )~
+Makes current definition compileonly
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                      *setflags*
+setflags ( char -- )~
+Sets Flags with a mask. This isn't immediate
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                      *(create)*
+(create)~
+name ( -- ) Names a location; space may be allocated at this location, or it 
+can be set to contain a string or other intialized value. Instance behavior
+returns the address of the beginning of this space. Use FIG-style 
+<builds...does>!
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *find*
+find ( c-addr len -- a-addr flags )~
+Searches for a string in dict. Gives back flags, which are different
+to ANS!
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.25*
+Folding~
+------------------------------------------------------------------------------
+                                                                    *0-foldable*
+0-foldable ( -- )~
+Current word becomes foldable with 0 constants
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                    *1-foldable*
+1-foldable ( -- )~
+1 constant
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                    *2-foldable*
+2-foldable ( -- )~
+2 constant
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                    *3-foldable*
+3-foldable ( -- )~
+3 constant
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                    *4-foldable*
+4-foldable ( -- )~
+4 constant
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                    *5-foldable*
+5-foldable ( -- )~
+5 constant
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                    *6-foldable*
+6-foldable ( -- )~
+6 constant
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                    *7-foldable*
+7-foldable ( -- )~
+7 constant
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.26*
+Compiler Essentials~
+------------------------------------------------------------------------------
+                                                                       *execute*
+execute ( a-addr -- )~
+Calls subroutine
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                       *recurse*
+recurse ( -- )~
+Lets teh current definition call itself
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *'*
+' name ( -- a-addr )~
+Tries to find name in dict gives back executable address
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *[']*
+['] name ( -- a-addr )~
+Tick that compiles the executable address found word as literal 
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                      *postpone*
+postpone ( -- )~
+See Glossary
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                       *<builds*
+<builds ( -- )~
+Makes dict header and reserves space for special cell
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *does>*
+does> ( -- )~
+Executes: ( -- a-addr ) Gives address to where you have stored data
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *create*
+create name ( -- )~
+Create a definition with default action which cannot be changed later. Use
+<builds does> instead. Equivalent to: create <builds does>;
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *state*
+state ( -- a-addr )~
+Address of state variable
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *]*
+] ( -- )~
+Switch to compile state
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *[*
+[ ( -- )~
+Switch to execute state
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *;*
+; ( -- )~
+Finishes new definition
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                             *:*
+: ( -- )~
+Opens new definition
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.27*
+Decisions~
+------------------------------------------------------------------------------
+                                                                          *then*
+then ( -- )~
+This is the common flag if ... [else ...] then structure
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *else*
+else ( -- )~
+Flag if ... [else ...] then
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *if*
+if ( flag -- )~
+Structure
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.28*
+Case~
+------------------------------------------------------------------------------
+                                                                          *case*
+case ( n -- n )~
+Begins case structure
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *of*
+of ( m -- )~
+Compares m with n, choose this if n=m
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *?of*
+?of ( n flag -- )~
+Flag-of, for custom comparisons
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *endof*
+endof ( -- )~
+End of one possibility
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                       *endcase*
+endcase ( n -- )~
+Ends case structure, discards n
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.29*
+Indefinite Loops~
+------------------------------------------------------------------------------
+                                                                        *repeat*
+repeat ( -- )~
+Finish of a middle-flag-checking loop
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *while*
+while ( flag -- )~
+Check a flag in the middle of a loop
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *until*
+until ( flag -- )~
+Begin ... flag until loops as long flag is true
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *again*
+again ( -- )~
+Begin ... again is an endless loop
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *begin*
+begin ( -- )~
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.30*
+Definite Loops~
+------------------------------------------------------------------------------
+                                                                             *i*
+i ( -- u|n )~
+Gives innermost loop index.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *j*
+j ( -- u|n )~
+Gives second loop index.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *k*
+k ( -- u|n )~
+Gives third loop index.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                        *unloop*
+unloop ( R: old-limit old-index -- )~
+Drops innermost loop structure, pops back old loop structures to loop registers.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *exit*
+exit ( -- )~
+Returns from current definition. Compiles a ret opcode.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *leave*
+leave ( -- ) (R: old-limit old-index -- )~
+Leaves current innermost loop promptly.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *+loop*
++loop (u|n--) (R:unchanged|old-limitold-index--)~
+If you want the index to go up by some number other than one each time around.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *loop*
+loop ( -- ) (R: unchanged | old-limit old-index -- )~
+Increments current loop index register by one and checks whether to continue or
+not.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *?do*
+?do ( Limit index -- ) ( R: unchanged | -- old-limit old-index )~
+Begins a loop if limit and index are not equal.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                            *do*
+do ( Limit Index -- ) ( R: -- old-limit old-index )~
+Begins a loop.
+
+TODO
+
+
+==============================================================================
+                                                                 *example_01.31*
+Common Hardware Access~
+------------------------------------------------------------------------------
+                                                                         *reset*
+reset ( -- )~
+Reset on hardware level.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *dint*
+dint ( -- )~
+Disables Interrupts.
+
+TODO
+
+-----------------------------------------------------------------------------
+                                                                          *eint*
+eint ( -- )~
+Enables Interrupts.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *nop*
+nop ( -- )~
+No Operation. Hook for unused handlers!
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *ipsr*
+ipsr ( -- ipsr )~
+Interrupt Program Status Register.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                     *unhandled*
+unhandled ( -- )~
+Message for unhandled interrupts.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                   *irq-systick*
+irq-systick ( -- a-addr )~
+Memory locations for IRQ-Hooks.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                     *irq-fault*
+irq-fault ( -- a-addr )~
+For all faults.
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                *irq-collection*
+irq-collection ( -- a-addr )~
+Collection of all unhandled interrupts.
+
+TODO
+
+
+
+
+# vim: tw=80 ts=2 filetype=help modifiable noreadonly

@@ -39,6 +39,7 @@ If you need help remembering a word while coding, the plugin provides word-compl
 
 ## FOLDER STRUCTURE:
 
+```
  -~
   |- .vim
   |  |   
@@ -73,6 +74,7 @@ If you need help remembering a word while coding, the plugin provides word-compl
   |  |- forthtags.cfg                 User file with paths/filenames to search for words
   |  |- tags                          Project specific words created by **forthtags.sh**
          +
+```
 
 ## INSTALLATION:
   

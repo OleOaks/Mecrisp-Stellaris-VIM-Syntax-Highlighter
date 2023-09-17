@@ -100,6 +100,13 @@ If you need help remembering a word while coding, the plugin provides word-compl
 >
 > In terminal, after running script, watch for terminal prompt to re-appear to indicate it's complete.
 
+## DEPENDENCIES:
+
+- AWK
+- SED
+- XMLSTARLET
+- POSIX SHELL ( i.e. !/bn/sh )
+
 ## THINGS THAT HAPPEN AUTO-MAGICALLY:
 
 1. Opening or saving a .fs file executes a script in ~/.vim/ftplugin/forth/forth.vim. 

@@ -84,9 +84,11 @@ If you need help remembering a word while coding, the plugin provides word-compl
    - Open a terminal window and navigate to your new folder
    - Enter the GIT clone command along with the copyied SSH text to clone for your operating system
    - Edit your ~/.vimrc file to include these lines
+```
       `syntax on`
       `filetype plugin on`
       `noremap <c-k> :execute "horiz help "`
+```
    - Copy the `~/.vim/ftplugin/forth/forthtags.cfg` file to any folder you will be saving .fs files.
        Edit the file to include files/directories that are used in your project
    - Create an MCU specific set of files for the MCU chip you are working with.

@@ -72,8 +72,6 @@ If you need help remembering a word while coding, the plugin provides word-compl
   |
   |- (your forth project path)      Folder - The folder where you keep your main project .fs files 
   |  |- forthtags.cfg                 User file with paths/filenames to search for words
-  |  |- tags                          Project specific words created by **forthtags.sh**
-         +
 ```
 
 ## INSTALLATION:
@@ -97,6 +95,10 @@ If you need help remembering a word while coding, the plugin provides word-compl
 > [!IMPORTANT]
 > You must place an edited copy of the `forthags.cfg` file in any folder you save forth .fs files
 
+> [!NOTE]
+> The `/.vim/doc/convert_svd.sh` script will take up to a few minutes to fully process the .svd file
+> In terminal, after running script, watch for terminal prompt to re-appear to indicate it's complete.
+
 ### Edit your vimrc
   Add the following lines to your `/.vimrc` file
 
@@ -108,26 +110,21 @@ If you need help remembering a word while coding, the plugin provides word-compl
 
 -   When creating or reading a .fs file, it's VIM filetype is set to 'forth'.
 
-## VIM KEYSTROKES TO LEARN ( This plugin only relies on built-in VIM keystrokes ):
+## VIM KEYSTROKES TO LEARN ( This plugin relies primarily on built-in VIM keystrokes ):
 
-  1. Beginner - Must know
-     A. `Ctrl-k`  - Open help for specific word
-     B. `Ctrl-p`  - Start code-completion
-     C. `Ctrl-]`  - Follow forthtag link to definition of custom word
-     D. `:q`      - Close a help file that was opened
+1. Beginner - Must know
+   - `Ctrl-k`  - Open help for specific word
+   - `Ctrl-p`  - Start code-completion
+   - `Ctrl-]`  - Follow forthtag link to definition of custom word
+   - `:q`      - Close a help file that was opened
 
-  2. Intermediate - Helpful to know
-     A. Ctrl-y  - Closes code-completion without changing your word
-     B. Ctrl-n  - Use Ctrl-n immediately after Ctrl-p to deselect, allows you to continue typing and auto update code-completion
-     C. Ctrl-n  - Use Ctrl-n and Ctrl-p to navigate up/down in the code-completion popup
-     D. Ctrl-o  - After using Ctrl-] to follow a link, uste Ctrl-o to jump back to where you called the link
+- Intermediate - Helpful to know
+   - `Ctrl-y`  - Closes code-completion without changing your word
+   - `Ctrl-n`  - Use Ctrl-n immediately after Ctrl-p to deselect, allows you to continue typing and auto update code-completion
+   - `Ctrl-n`  - Use Ctrl-n and Ctrl-p to navigate up/down in the code-completion popup
+   - `Ctrl-o`  - After using Ctrl-] to follow a link, uste Ctrl-o to jump back to where you called the link
 
-What happens automatically and what needs to be done by you?
-
-
-Description:
-
-Documentation(help): (~/.vim/doc/)
+## Documentation(help): (~/.vim/doc/)
   
   mecrisp-stellaris.txt
     Documentation for all standard Mecrisp-Stellaris words
@@ -145,13 +142,6 @@ Documentation(help): (~/.vim/doc/)
     Contains all help file help file links
     If any help file is changed/created, run 
        ':helptags ALL' to re-create help tags
-
-  brett.txt
-
-forthtags: (~/.vim/ftplugin)
-  
-  
-  forth.vim
 
 # FAQ:
 

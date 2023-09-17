@@ -100,9 +100,6 @@ If you need help remembering a word while coding, the plugin provides word-compl
 >
 > In terminal, after running script, watch for terminal prompt to re-appear to indicate it's complete.
 
-### Edit your vimrc
-  Add the following lines to your `/.vimrc` file
-
 ## THINGS THAT HAPPEN AUTO-MAGICALLY:
 
 1. Opening or saving a .fs file executes a script in ~/.vim/ftplugin/forth/forth.vim. 

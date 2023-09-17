@@ -96,7 +96,8 @@ If you need help remembering a word while coding, the plugin provides word-compl
 > You must place an edited copy of the `forthags.cfg` file in any folder you save forth .fs files
 
 > [!NOTE]
-> The `/.vim/doc/convert_svd.sh` script will take up to a few minutes to fully process the .svd file
+> The `/.vim/doc/convert_svd.sh` script will take up to a few minutes to fully process the .svd file.
+>
 > In terminal, after running script, watch for terminal prompt to re-appear to indicate it's complete.
 
 ### Edit your vimrc

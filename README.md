@@ -34,8 +34,8 @@ If you need help remembering a word while coding, the plugin provides word-compl
 1. All text in your .fs code should be syntax highlighted, there should be no black/white remaining.
 2. For standard Mecrisp words, type `Ctrl-k` to open a help file.
 3. For any MCU Peripheral-Register-Bitfield words, type `Ctrl-k` to open a help file.
-4. For any forthtags words you've defined in a .fs file, type `Ctrl-]` to jump to it's definition
-5. For help completing a word, type Ctrl-p. Works with all word types listed, 2, 3, and 4 above.
+4. For any forth words you've defined in project .fs files, type `Ctrl-]` to jump to it's definition
+5. For help completing a word, type `Ctrl-p`. Works with all word types listed, 2, 3, and 4 above.
 
 ## FOLDER STRUCTURE:
 

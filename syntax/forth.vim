@@ -224,6 +224,45 @@ syn keyword forthDefiniteLoops I J K UNLOOP EXIT LEAVE +LOOP LOOP ?DO DO
 syn keyword forthHardwareAccess RESET DINT EINT EINT? NOP IPSR UNHANDLED
 syn keyword forthHardwareAccess IRQ-SYSTICK IRQ-FAULT IRQ-COLLECTION
 
+" IRQs
+syn keyword forthHardwareAccess irq-systick
+syn keyword forthHardwareAccess irq-fault
+syn keyword forthHardwareAccess irq-collection
+syn keyword forthHardwareAccess irq-rtc
+syn keyword forthHardwareAccess irq-exti0
+syn keyword forthHardwareAccess irq-exti1
+syn keyword forthHardwareAccess irq-exti2
+syn keyword forthHardwareAccess irq-exti3
+syn keyword forthHardwareAccess irq-exti4
+syn keyword forthHardwareAccess irq-adc
+syn keyword forthHardwareAccess irq-exti5
+syn keyword forthHardwareAccess irq-tim1brk
+syn keyword forthHardwareAccess irq-tim1up
+syn keyword forthHardwareAccess irq-tim1trg
+syn keyword forthHardwareAccess irq-tim1cc
+syn keyword forthHardwareAccess irq-tim2
+syn keyword forthHardwareAccess irq-tim3
+syn keyword forthHardwareAccess irq-tim4
+syn keyword forthHardwareAccess irq-i2c1ev
+syn keyword forthHardwareAccess irq-i2c1er
+syn keyword forthHardwareAccess irq-i2c2ev
+syn keyword forthHardwareAccess irq-i2c2er
+syn keyword forthHardwareAccess irq-spi1
+syn keyword forthHardwareAccess irq-spi2
+syn keyword forthHardwareAccess irq-usart1
+syn keyword forthHardwareAccess irq-usart2
+syn keyword forthHardwareAccess irq-usart3
+syn keyword forthHardwareAccess irq-exti10
+syn keyword forthHardwareAccess irq-rtcalarm
+syn keyword forthHardwareAccess irq-usbwkup
+syn keyword forthHardwareAccess irq-tim5
+syn keyword forthHardwareAccess irq-spi3
+syn keyword forthHardwareAccess irq-uart4
+syn keyword forthHardwareAccess irq-uart5
+syn keyword forthHardwareAccess irq-tim6
+syn keyword forthHardwareAccess irq-tim7
+syn keyword forthHardwareAccess irq-usbfs
+
 " -----------------------------------------------------------------------------
 " SPECIAL
 " -----------------------------------------------------------------------------

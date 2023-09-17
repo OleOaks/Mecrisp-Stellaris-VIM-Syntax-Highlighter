@@ -1,7 +1,6 @@
 *mecrisp-stellaris.txt*  Help for Mecrisp-Stellaris Forth programming language
 
                        MECRISP-STELLARIS HELP
-                           by Brett Olson
 
      -----------+-----------------------------------+--------------
      Dictionary | Description                       | Example Code

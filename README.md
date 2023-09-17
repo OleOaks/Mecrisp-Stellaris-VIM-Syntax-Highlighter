@@ -85,9 +85,9 @@ If you need help remembering a word while coding, the plugin provides word-compl
    - Enter the GIT clone command along with the copyied SSH text to clone for your operating system
    - Edit your ~/.vimrc file to include these lines
 ```
-      `syntax on`
-      `filetype plugin on`
-      `noremap <c-k> :execute "horiz help "`
+      syntax on
+      filetype plugin on
+      noremap <c-k> :execute "horiz help "
 ```
    - Copy the `~/.vim/ftplugin/forth/forthtags.cfg` file to any folder you will be saving .fs files.
        Edit the file to include files/directories that are used in your project

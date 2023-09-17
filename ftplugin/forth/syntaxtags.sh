@@ -1,5 +1,7 @@
 #!/bin/sh
-
+# created for Mecrisp-Stellaris Forth by Matthias Koch
+# This script creates forthtags for project specific forth words
+# By Brett Olson "brettolson@cox.net" 2023, released under the MIT License
 # This script creates/overwrites a new syntax highlighting file for forthtags
 # The existing tag file (no extension) from the filepath is used as a source
 

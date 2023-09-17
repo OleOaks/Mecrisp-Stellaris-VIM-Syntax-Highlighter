@@ -1,6 +1,7 @@
 " forth.vim - VIM plugin for Mecrisp-Stellaris Forth
-" By Brett Olson brettolson@cox.net
-
+" created for Mecrisp-Stellaris Forth by Matthias Koch
+" This VIM script sets up the Forth VIM plugin
+" By Brett Olson "brettolson@cox.net" 2023, released under the MIT License
 
 set complete+=k
 set dictionary+=~/.vim/words/forth.txt

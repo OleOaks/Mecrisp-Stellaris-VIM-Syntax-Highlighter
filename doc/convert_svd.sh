@@ -1,4 +1,8 @@
 #!/bin/sh
+# created for Mecrisp-Stellaris Forth by Matthias Koch
+# This script converts an CMSIS-SVD file into multiple VIM files
+#   to enable auto-completion and syntax highlighting.
+# By Brett Olson "brettolson@cox.net" 2023, released under the MIT License
 
 # Store the current working directory
 current_directory=$(pwd)

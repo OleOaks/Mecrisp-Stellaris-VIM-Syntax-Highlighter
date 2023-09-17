@@ -2,7 +2,8 @@
 " Language:    MECRISP-STELLARIS FORTH
 " Current Maintainer:  Brett Olson
 " Heavily modified from packaged version by Johan Kotlinski <kotlinski@gmail.com>
-" Last Change: 2023-08-30
+" Last Change: 2023-09-16
+" By Brett Olson "brettolson@cox.net" 2023, released under the MIT License
 " Filenames:   *.fs
 "
 " Personally, my favorite colorscheme with this syntax is 'Slate'

@@ -5,6 +5,7 @@
      -----------+-----------------------------------+--------------
      Dictionary | Description                       | Example Code
      -----------+-----------------------------------+--------------
+     |dict_01.00| | Number Bases                      | |example_01.00|
      |dict_01.01| | Terminal IO                       | |example_01.01|
      |dict_01.02| | Character Manipulation            | |example_01.02|
      |dict_01.03| | Single Stack Jugglers             | |example_01.03|
@@ -46,6 +47,13 @@
 
 ==============================================================================
 Dictionary~
+------------------------------------------------------------------------------
+                                                                    *dict_01.00*
+Number Bases~
+|binary|   ( --        ) Sets base to 2
+|decimal|  ( --        ) Sets base to 10
+|hex|      ( --        ) Sets base to 16
+|base|     ( -- a-addr ) Base variable address
 ------------------------------------------------------------------------------
                                                                     *dict_01.01*
 Terminal IO~
@@ -480,6 +488,38 @@ Common Hardware Access~
 |irq-collection| ( -- a-addr ) Collection of all unhandled interrupts.
 
 ==============================================================================
+                                                                 *example_01.00*
+Number Bases
+
+------------------------------------------------------------------------------
+                                                                        *binary*
+binary ( -- )~
+Sets base to 2
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                       *decimal*
+decimal ( -- )~
+Sets base to 10
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                           *hex*
+hex ( -- )~
+Sets base to 16
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *base*
+base ( -- a-addr )~
+Base variable address
+
+TODO
+
+------------------------------------------------------------------------------
                                                                  *example_01.01*
 Terminal IO~
 
@@ -1599,7 +1639,32 @@ TODO
 constant name ( u|n -- )~
 Makes a single constant. i.e. "$1024 constant one-kb"
 
-TODO
+Examples - Creating:
+
+42        CONSTANT lifeMeaning  \ value CONSTANT name
+$40010800 CONSTANT GPIOA        \ hexAddr CONSTANT peripheral
+%01       CONSTANT ON           \ binary CONSTANT status
+GPIOA 4 + CONSTANT GPIOA_CRH    \ value CONSTANT register
+
+Examples - Usage:
+
+lifeMeaning 2 * . \ Prints 84
+GPIOA_CRH hex.    \ Prints 40010804
+ON .              \ Prints 1
+GPIOA_CRH @ hex.  \ ?, depends on value of memory stored at addr $40010804
+' lifeMeaning .   \ prints the dictionary CODE address of the constant
+
+Writing a constant puts its value on the stack, unlike a variable which puts
+  it's address on the stack.
+
+Constants cannot be changed after they are defined
+
+If @ is mistakenly used after a named constant, the value of the constant will
+  be used as a memory address and the contents stored at that memory address
+  will be returned. This is unwanted behavior unless memory addresses are
+  the explicit reason for the constant, e.g. GPIOA and GPIOA_CRH above.
+
+see also: |'|, |hex.|, |@|, |.|, |variable|
 
 ------------------------------------------------------------------------------
                                                                      *2variable*

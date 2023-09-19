@@ -83,6 +83,9 @@ endif
 " Keywords
 " -----------------------------------------------------------------------------
 
+" Number Bases
+syn keyword forthNumberBases BINARY DECIMAL HEX BASE
+
 " Terminal-IO
 syn keyword forthTerminalIO EMIT? KEY? KEY EMIT HOOK-EMIT? HOOK-KEY?
 syn keyword forthTerminalIO HOOK-KEY HOOK-EMIT SERIAL-EMIT? SERIAL-KEY?
@@ -295,6 +298,7 @@ syn match forthComment '\\\(\s.*\)\=$' contains=@Spell,forthTodo,forthSpaceError
 " Define the default highlighting.
 hi def link forthTodo Todo
 
+hi def link forthNumberBases Debug
 hi def link forthTerminalIO Identifier
 hi def link forthCharacterManipulation String
 hi def link forthSingleJugglers Define

@@ -5691,12 +5691,19 @@ aligned	mecrisp-stellaris.txt	/*aligned*
 allot	mecrisp-stellaris.txt	/*allot*
 and	mecrisp-stellaris.txt	/*and*
 arshift	mecrisp-stellaris.txt	/*arshift*
+base	mecrisp-stellaris.txt	/*base*
 begin	mecrisp-stellaris.txt	/*begin*
 bic	mecrisp-stellaris.txt	/*bic*
+binary	mecrisp-stellaris.txt	/*binary*
 bis!	mecrisp-stellaris.txt	/*bis!*
 bit@	mecrisp-stellaris.txt	/*bit@*
 bl	mecrisp-stellaris.txt	/*bl*
+boFreeBSD	brett.txt	/*boFreeBSD*
+boMAKEFILE	brett.txt	/*boMAKEFILE*
+boST-FLASH	brett.txt	/*boST-FLASH*
 boSTM32	brett.txt	/*boSTM32*
+boSWDCOM	brett.txt	/*boSWDCOM*
+boZFS	brett.txt	/*boZFS*
 boawk	brett.txt	/*boawk*
 bopicocom	brett.txt	/*bopicocom*
 boshell	brett.txt	/*boshell*
@@ -5746,7 +5753,9 @@ d<>	mecrisp-stellaris.txt	/*d<>*
 d=	mecrisp-stellaris.txt	/*d=*
 d>	mecrisp-stellaris.txt	/*d>*
 dabs	mecrisp-stellaris.txt	/*dabs*
+decimal	mecrisp-stellaris.txt	/*decimal*
 depth	mecrisp-stellaris.txt	/*depth*
+dict_01.00	mecrisp-stellaris.txt	/*dict_01.00*
 dict_01.01	mecrisp-stellaris.txt	/*dict_01.01*
 dict_01.02	mecrisp-stellaris.txt	/*dict_01.02*
 dict_01.03	mecrisp-stellaris.txt	/*dict_01.03*
@@ -5801,6 +5810,7 @@ eraseflash	mecrisp-stellaris.txt	/*eraseflash*
 eraseflashfrom	mecrisp-stellaris.txt	/*eraseflashfrom*
 evaluate	mecrisp-stellaris.txt	/*evaluate*
 even	mecrisp-stellaris.txt	/*even*
+example_01.00	mecrisp-stellaris.txt	/*example_01.00*
 example_01.01	mecrisp-stellaris.txt	/*example_01.01*
 example_01.02	mecrisp-stellaris.txt	/*example_01.02*
 example_01.03	mecrisp-stellaris.txt	/*example_01.03*
@@ -5855,6 +5865,7 @@ halign	mecrisp-stellaris.txt	/*halign*
 hbis!	mecrisp-stellaris.txt	/*hbis!*
 hbit@	mecrisp-stellaris.txt	/*hbit@*
 here	mecrisp-stellaris.txt	/*here*
+hex	mecrisp-stellaris.txt	/*hex*
 hex.	mecrisp-stellaris.txt	/*hex.*
 hflash!	mecrisp-stellaris.txt	/*hflash!*
 hold	mecrisp-stellaris.txt	/*hold*

@@ -5694,6 +5694,7 @@ arshift	mecrisp-stellaris.txt	/*arshift*
 base	mecrisp-stellaris.txt	/*base*
 begin	mecrisp-stellaris.txt	/*begin*
 bic	mecrisp-stellaris.txt	/*bic*
+bic!	mecrisp-stellaris.txt	/*bic!*
 binary	mecrisp-stellaris.txt	/*binary*
 bis!	mecrisp-stellaris.txt	/*bis!*
 bit@	mecrisp-stellaris.txt	/*bit@*
@@ -5720,6 +5721,7 @@ c@	mecrisp-stellaris.txt	/*c@*
 call,	mecrisp-stellaris.txt	/*call,*
 case	mecrisp-stellaris.txt	/*case*
 cbic!	mecrisp-stellaris.txt	/*cbic!*
+cbis!	mecrisp-stellaris.txt	/*cbis!*
 cbit@	mecrisp-stellaris.txt	/*cbit@*
 cell+	mecrisp-stellaris.txt	/*cell+*
 cells	mecrisp-stellaris.txt	/*cells*
@@ -5862,6 +5864,7 @@ h,	mecrisp-stellaris.txt	/*h,*
 h.s	mecrisp-stellaris.txt	/*h.s*
 h@	mecrisp-stellaris.txt	/*h@*
 halign	mecrisp-stellaris.txt	/*halign*
+hbic!	mecrisp-stellaris.txt	/*hbic!*
 hbis!	mecrisp-stellaris.txt	/*hbis!*
 hbit@	mecrisp-stellaris.txt	/*hbit@*
 here	mecrisp-stellaris.txt	/*here*

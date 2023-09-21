@@ -242,7 +242,10 @@ Bits: Test, Toggle, Clear and Set~
 |cxor!| ( mask c-addr --      ) Toggle bit in byte-location
 |hxor!| ( mask h-addr --      ) Toggle bit in halfword-location
 |xor!|  ( mask a-addr --      ) Toggle bit in word-location
-|cbic!| ( mask c-addr --      ) Clear bit in halfword-location
+|cbic!| ( mask c-addr --      ) Clear bit in byte-location
+|hbic!| ( mask c-addr --      ) Clear bit in halfword-location
+|bic!|  ( mask c-addr --      ) Clear bit in word-location
+|cbis!| ( mask c-addr --      ) Set bit in byte-location
 |hbis!| ( mask h-addr --      ) Set bit in halfword-location
 |bis!|  ( mask a-addr --      ) Set bit in word-location
 ------------------------------------------------------------------------------
@@ -1554,7 +1557,20 @@ TODO
 bit@  ( mask a-addr -- flag )~
 Test bit in word-location
 
-TODO
+Every 1 in the mask is matched against the corresponding bit at the addrress.
+If any of the 1 bits match, -1 (TRUE) is returned.
+This does NOT test if the entire mask matches the value at addr.
+This does NOT test any 0 bits in the mask.
+
+For example:
+42 VARIABLE test         \ creates a variable with the value %101010
+%000000 test bit@ =  0   \ No bits are 1, therefore no possible matches
+%100000 test bit@ = -1   \ Bit 5 is match, therefore TRUE
+%010101 test bit@ =  0   \ Bit 0, 1, 3 are tested, no match, therefore FALSE
+%111111 test bit@ = -1   \ Bit 0, 2, 4 are matches, therefore TRUE
+%011000 test bit@ = -1   \ Bit 3 matches, therefore TRUE, even though 
+                             bit 4 does NOT match.
+
 
 ------------------------------------------------------------------------------
                                                                          *cxor!*
@@ -1580,7 +1596,28 @@ TODO
 ------------------------------------------------------------------------------
                                                                          *cbic!*
 cbic! ( mask c-addr -- )~
+Clear bit in byte-location
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *hbic!*
+hbic! ( mask h-addr -- )~
 Clear bit in halfword-location
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                          *bic!*
+bic! ( mask c-addr -- )~
+Clear bit in word-location
+
+TODO
+
+------------------------------------------------------------------------------
+                                                                         *cbis!*
+cbis! ( mask h-addr -- )~
+Set bit in byte-location
 
 TODO
 

@@ -7,13 +7,37 @@
 # Store the current working directory
 current_directory=$(pwd)
 
-# Store the svd directory
-svd_directory=/home/brett/forth/STM32-Blue-Pill-Book/common/svd2forth-v3-stm32
+# ===========================================================================
+#  CHANGE THE FOLLOWING ITEMS TO SWITCH MCU SUPPORT DOCUMENTATION
+# ===========================================================================
 
-# Store the svd filename
-svd_file=STM32F103xx.svd
+# Store the directory wher the mcu svd file is stored
+svd_directory=/home/brett/.vim/doc
+
+# Select/add the svd filename
+#
+#svd_file=STM32F103.svd
+#svd_file=STM32F411.svd
+svd_file=STM32F0x1.svd
 #svd_file=STM32H7x3.svd
 
+# Select/add the reference manual page file
+# You can create your own mapping between register names and PDF Reference Manual
+# Page numbers will appear as hyperlinks in the MCU help file
+# File format is 'page# <tab> registername'
+#
+svd_rm_pages=rm_stm32f0x1.tsv
+#svd_rm_pages=rm_stm32f103.tsv
+#svd_rm_pages=rm_stm32f411.tsv
+
+# Select/add the PDF file path that will appear in the page hyperlinks for each register
+# Test the hyperlink by pasting the hyperlink below into a web browsesr
+#
+svd_rm_pdf=file:///usr/home/brett/.vim/doc/RM0091%20Reference%20manual%20STM32F0xx.pdf
+#svd_rm_pdf=file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf
+#svd_rm_pdf=file:///usr/home/brett/.vim/doc/STM32F411CEU6_ReferenceManual.pdf
+
+# ============================================================================
 # Store the svd path/file
 up="$svd_directory/$svd_file"
 
@@ -26,6 +50,9 @@ svd_syntax_bitfield="$HOME/.vim/syntax/mcu/mcu_bitfield.vim"
 svd_dictionary_peripheral="$HOME/.vim/words/mcu_peripheral.txt"
 svd_dictionary_register="$HOME/.vim/words/mcu_register.txt"
 svd_dictionary_bitfield="$HOME/.vim/words/mcu_bitfield.txt"
+
+# MCU bitfield replacements file
+svd_replacement_bitfield="$HOME/.vim/doc/mcu_replacement_bitfield.txt"
 
 # MCU help files
 svd_help_mcu="$HOME/.vim/doc/mcu.txt"
@@ -161,7 +188,39 @@ mv "$tmpfile" bitfield.tsv
 # Create syntax files
 awk -F '\t' '{print "syn keyword forthPeripheral " $1} END {print "hi def link forthPeripheral Identifier"}' peripheral.tsv > "$svd_syntax_peripheral"
 awk -F '\t' '{print "syn keyword forthRegister " $3} END {print "hi def link forthRegister Identifier"}' register.tsv > "$svd_syntax_register"
-awk -F '\t' '{print "syn keyword forthBitfield " $5} END {print "hi def link forthBitfield Identifier"}' bitfield.tsv > "$svd_syntax_bitfield"
+
+awk_syntax_bitfield_script='
+BEGIN {
+  FS = "\t";
+}
+{
+  btfld = $5 # Bitfield name
+  bw    = $8 # Bit width
+
+  # Bitfield name with no suffix
+  print "syn keyword forthBitfield " btfld
+
+  # Bitfield name with ! or !! suffix
+  if ( ac != "ro" ) {
+    print "syn keyword forthBitfield " btfld "!"
+    print "syn keyword forthBitfield " btfld "!!"
+  }
+ 
+  # Bitfield name with @ suffix 
+  if ( ac != "wo" ) {
+    print "syn keyword forthBitfield " btfld "@"
+   }
+}
+END {
+  print "hi def link forthBitfield Identifier"
+}
+'
+awk_script_file=$(mktemp)
+echo "$awk_syntax_bitfield_script" > "$awk_script_file"
+
+awk -f "$awk_script_file" bitfield.tsv > "$svd_syntax_bitfield"
+rm "$awk_script_file"
+#awk -F '\t' '{print "syn keyword forthBitfield " $5} END {print "hi def link forthBitfield Identifier"}' bitfield.tsv > "$svd_syntax_bitfield"
 
 #==============================================================================
 # CREATE VIM FILES FOR DICTIONARY
@@ -173,6 +232,63 @@ awk -F '\t' '{print $3}' register.tsv > "$svd_dictionary_register"
 awk -F '\t' '{print $5}' bitfield.tsv > "$svd_dictionary_bitfield"
 
 #==============================================================================
+# CREATE FORTH BITFIELD NAME REPLACEMENT FILE ( for code substitution )
+# =============================================================================
+awk_bitfield_script='
+BEGIN {
+  FS = "\t";
+  OFS=FS;
+}
+{
+  btfld = $5  # Bitfield name
+  addr  = $6  # Register Address
+  bo    = $7  # Bit offset
+  bw    = $8  # Bit width
+  ac    = $9  # Access rights (ro, wo, rw)
+
+  # Bitfield name with no suffix
+  if ( bo == 0 )
+    print btfld, ""            # Do not bother with LSHIFT if offset is zero
+  else
+    print btfld, bo " LSHIFT"  # Normal bo with LSHIFT
+
+  # Bitfield name with ! suffix
+  if ( ac != "ro" ) {
+    if ( bo == 0 )
+      print btfld "!", "$" addr " BIS!"
+    else
+      print btfld "!", bo " LSHIFT $" addr " BIS!"
+  }
+  
+  # Bitfield name with !! suffix (Clear bits first)
+  if (ac != "ro" ) {
+    if ( bo == 0 ) 
+      print btfld "!!", ( 2 ** bw - 1 ) " $" addr " BIC! $" addr " BIS!"
+    else
+      print btfld "!!", ( 2 ** bw - 1 ) " " bo " LSHIFT $" addr " BIC! " bo " LSHIFT $" addr " BIS!"
+  }
+
+  # Bitfield name with @ suffix
+  if (ac != "wo" ) {
+    if ( bo == 0 )
+      print btfld "@", ( 2 ** bw - 1 ) " $" addr " @ AND"
+    else
+      print btfld "@", ( 2 ** bw - 1 ) " " bo " LSHIFT $" addr " @ AND " bo " RSHIFT"
+  }
+}
+'
+awk_script_file=$(mktemp)
+echo "$awk_bitfield_script" > "$awk_script_file"
+
+# Create file
+awk -F '\t' 'BEGIN {OFS=FS} {print $1, "$" $2 }' peripheral.tsv > "$svd_replacement_bitfield"
+awk -F '\t' 'BEGIN {OFS=FS} {print $3, "$" $6 }' register.tsv >> "$svd_replacement_bitfield"
+awk -f "$awk_script_file" bitfield.tsv >> "$svd_replacement_bitfield"
+rm "$awk_script_file"
+
+awk -F '\t' '{print "s# " $1 " # " $2 " #gi"}' "$svd_replacement_bitfield" > sed_replace_script.sed
+
+#==============================================================================
 # CREATE VIM FILES FOR HELP
 # =============================================================================
 
@@ -181,19 +297,38 @@ awk -F '\t' '{print $5}' bitfield.tsv > "$svd_dictionary_bitfield"
 # -----------------------------------------------------------------------------
 #
 # Create header for peripherals
+periphwidth=$(awk -F '\t' -v periph="$peripheral" '(length($1) > max) { max = length($1) } END { print max }' peripheral.tsv)
+descwidth=$(awk -F '\t' -v periph="$peripheral" '(length($3) > max) { max = length($3) } END { print max }' peripheral.tsv)
+periphwidth=$((periphwidth < 12 ? 12 : periphwidth))
+periphwidth=$((periphwidth + 2)) # for |'s
+descwidth=$((descwidth + 2))
+descwidht=$((descwidth < 12 ? 12 : descwidth))
+totwidth=$(( 1 + periphwidth + 1 + 11 + 1 + descwidth))
+
 head_p="*mcu.txt*  Help for $svd_file MCU Peripherals\n\n"
-head_p="${head_p}         $svd_file  PERIPHERALS"
-head_p="${head_p}          by Brett Olson\n\n"
-head_p="${head_p} ------------------------------+-----------+---------------------------------------------------\n"
-head_p="${head_p}                    Peripheral | Address   | Description\n"
-head_p="${head_p} ------------------------------+-----------+---------------------------------------------------\n"
+head_p="${head_p} PERIPHERALS for $svd_file~\n\n"
+
+# Border line with dashes (-) and pluses (+)
+border_p=" $(printf '%.0s-' $(seq "$periphwidth"))+"
+border_p="${border_p}-----------+"
+border_p="${border_p}$(printf '%.0s-' $(seq "$descwidth"))"
+
+format="%${periphwidth}s | %-9s | %s"
+title_p=$(printf "$format" "Peripheral" "Address" " Description")
+
+head_p="${head_p}${border_p}\n"
+head_p="${head_p}${title_p}\n"
+head_p="${head_p}${border_p}"
 
 echo -e "${head_p}" >> "$svd_help_mcu"
 
-#awk -F '\t' '{print "     |" $1 "|	" $2 "	" $3}' peripheral.tsv >> "$svd_help_mcu"
-awk -F '\t' 'NR==FNR { printf "  %30s | %-9s | %s\n", "|" $1 "| ", "$" $2 , $3 }' peripheral.tsv peripheral.tsv >> "$svd_help_mcu"
-#awk -F '\t' 'NR==FNR {w = length($1) > w ? length($1) : w; next} {$1 = "|" $1 "|"} { $1 = sprintf("%*s", w+5, $1)} { print "   " $1 " | $" $2 " | " $3 }' peripheral.tsv peripheral.tsv >> "$svd_help_mcu"
-#awk -F '\t' 'NR==FNR {w = length($1) > w ? length($1) : w; next} {print $0 }' peripheral.tsv peripheral.tsv >> "$svd_help_mcu"
+#descwidth=29  # Set your desired value for descwidth
+awk -v pw="$periphwidth" -F '\t' '{ 
+  format = "  %"pw"s | %-9s | %s\n"; 
+  printf format, "|" $1 "|", "$" $2, $3
+  }' peripheral.tsv >> "$svd_help_mcu"
+
+echo -e "${border_p}\n\n" >> "$svd_help_mcu"
 
 # -----------------------------------------------------------------------------
 # SECTION: REGISTERS
@@ -205,23 +340,46 @@ create_register_table() {
   peripheral=$(echo "$input_line" | awk -F '\t' '{print $1}')
   baseAddress=$(echo "$input_line" | awk -F '\t' '{print "$" $2}')
   description=$(echo "$input_line" | awk -F '\t' '{print $3}')
+  regwidth=$(awk -F '\t' -v periph="$peripheral" '$1 == periph && (length($3) > max) { max = length($3) } END { print max }' register.tsv)
+  descwidth=$(awk -F '\t' -v periph="$peripheral" '$1 == periph && (length($9) > max) { max = length($9) } END { print max }' register.tsv)
+  regwidth=$((regwidth < 9 ? 9 : regwidth))
+  regwidth=$((regwidth + 2)) # for |'s
+  descwidth=$((descwidth + 2))
+  descwidht=$((descwidth < 12 ? 12 : descwidth))
+  totwidth=$(( 1 + regwidth + 1 + 4 + 1 + 11 + 1 + 8 + 1 + 11 + 1 + descwidth))
 
-  # Create header for registes
-  head_r=" ==========================================================================================================\n\n"
-  head_r="${head_r} REGISTERS\n\n"
+  #topbar=$(printf '=%.0s' $(seq 1 "$totwidth"))
+
+  head_r=""
+  head_r="${head_r}\n\n"
+  head_r="${head_r} REGISTERS~\n\n"
   head_r="${head_r} MCU:          $svd_file\n"
-  head_r="${head_r} Peripheral:   *$peripheral*\n"
+  head_r="${head_r} Peripheral:   *$peripheral*"
   head_r="${head_r} BaseAddress:  $baseAddress\n"
   head_r="${head_r} Description:  $description\n\n"
-  head_r="${head_r} ---------------------------+----+-----------+--------+-----------+-----------------------------------------\n"
-  head_r="${head_r}                   Register | Ac | Reset     | Offset | Address   | Description\n"
-  head_r="${head_r} ---------------------------+----+-----------+--------+-----------+-----------------------------------------\n"
+
+  # Border line with dashes (-) and pluses (+)
+  border_r=" $(printf '%.0s-' $(seq "$regwidth"))+"
+  border_r="${border_r}----+-----------+--------+-----------+"
+  border_r="${border_r}$(printf '%.0s-' $(seq "$descwidth"))"
+
+  format="%${regwidth}s | %-2s | %-9s | %-6s | %-9s | %s"
+  title_r=$(printf "$format" "Register" "ac" "Reset" "Offset"  "Address" " Description")
+
+  head_r="${head_r}${border_r}\n"
+  head_r="${head_r}${title_r}\n"
+  head_r="${head_r}${border_r}"
   
   echo -e "${head_r}" >> "$svd_help_mcu"
   
-  #awk -v search="$peripheral" -F '\t' '$1 == search { $1 = sprintf("%-*s", 9, $1) " |" $1 "|" $2 "| | " $3 " | " $4 " | " $5 " | " $6}' register.tsv >> "$svd_help_mcu"
-  awk -v search="$peripheral" -F '\t' '$1 == search { printf "  %27s | %-2s | %-9s | %-4s   | %-9s | %s\n", "|" $3 "|", $8, "$" $7, "$" $5, "$" $6, $9}' register.tsv >> "$svd_help_mcu"
-  #awk -F '\t' 'NR==FNR {w = length($1) > w ? length($1) : w; next} {$1 = "|" $1 "|"} { $1 = sprintf("%-*s", w+5, $1)} { print "   " $1 " | " $2 " | " $3 }' peripheral.tsv peripheral.tsv >> "$svd_help_mcu"
+  #descwidth=29  # Set your desired value for descwidth
+  awk -v search="$peripheral" -v rw="$regwidth" -F '\t' '$1 == search { 
+    format = "  %"rw"s | %-2s | %-9s | %-4s   | %-9s | %s\n"; 
+    printf format, "|" $3 "|", $8, "$" $7, "$" $5, "$" $6, $9
+    }' register.tsv >> "$svd_help_mcu"
+
+  echo -e "${border_r}" >> "$svd_help_mcu"
+  echo -e " (ac) Access rights\n\n" >> "$svd_help_mcu"
 }
 
 # Loop through each register
@@ -243,8 +401,22 @@ create_bitfield_table() {
   reset=$(echo "$input_line" | awk -F '\t' '{print "$" $7}')
   description=$(echo "$input_line" | awk -F '\t' '{print $9}')
   peripheralregister=$(echo "$input_line" | awk -F '\t' '{print $3}')
+  page=$(awk -F'\t' -v preg="$peripheralregister" '$2 == preg {print $1; exit}' $svd_rm_pages)
+  refmanual="$svd_rm_pdf#page=$page" 
+
+  bitwidth=$(awk -F '\t' -v register="$peripheralregister" '$3 == register && (length($5) > max) { max = length($5) } END { print max }' bitfield.tsv)
+  descwidth=$(awk -F '\t' -v register="$peripheralregister" '$3 == register && (length($10) > max) { max = length($10) } END { print max }' bitfield.tsv)
+  bitwidth=$((bitwidth < 9 ? 9 : bitwidth))
+  bitwidth=$((bitwidth + 2)) # for |'s
+  descwidth=$((descwidth + 2))
+  descwidth=$((descwidth < 12 ? 12 : descwidth))
+  totwidth=$(( 1 + bitwidth + 1 + 4 + 1 + 4 + 1 + 4 + 1 + 4 + 1 + descwidth))
   
-  # Create header for registes
+  #topbar=$(printf '=%.0s' $(seq 1 "$totwidth"))
+
+  head_b="\n\n"
+  #head_b="${head_r} $topbar\n\n"
+
   head_b=" BITFIELDS~\n\n"
   head_b="${head_b} Peripheral:  |$peripheral|\n"
   head_b="${head_b} Register:    *$peripheralregister*\n"
@@ -252,175 +424,30 @@ create_bitfield_table() {
   head_b="${head_b} Reset:       $reset\n"
   head_b="${head_b} Description: $description\n"
   head_b="${head_b} MCU:         $svd_file\n"
-  head_b="${head_b} -------------------------+----+----+----+-----------------------------------------\n"
-  head_b="${head_b}                 Bitfield | bo | bw | ac | Description\n"
-  head_b="${head_b} -------------------------+----+----+----+-----------------------------------------\n"
+  head_b="${head_b} Ref Manual:  $refmanual\n"
+  head_b="${head_b}              (place cursor on hyperlink, type 'gx' to follow)\n\n"
+
+  # Border line with dashes (-) and pluses (+)
+  border_b=" $(printf '%.0s-' $(seq "$bitwidth"))+"
+  border_b="${border_b}----+----+----+----+"
+  border_b="${border_b}$(printf '%.0s-' $(seq "$descwidth"))"
+
+  format="%${bitwidth}s | %-2s | %-2s | %-2s | %-2s | %s"
+  title_b=$(printf "$format" "Bitfield" "bo" "bw" "be"  "ac" "Description")
+
+  head_b="${head_b}${border_b}\n"
+  head_b="${head_b}${title_b}\n"
+  head_b="${head_b}${border_b}"
 
   echo -e "${head_b}" >> "$svd_help_mcu"
   
-  #awk -v search="$peripheral" -F '\t' '$1 == search { $1 = sprintf("%-*s", 9, $1) " |" $1 "|" $2 "| | " $3 " | " $4 " | " $5 " | " $6}' register.tsv >> "$svd_help_mcu"
-  awk -v search="$peripheralregister" -F '\t' '$3 == search { printf "   %24s | %-2s | %-2s | %-2s | %s\n", "*" $5 "*", $7, $8, $9, $10}' bitfield.tsv >> "$svd_help_mcu"
-  #awk -F '\t' 'NR==FNR {w = length($1) > w ? length($1) : w; next} {$1 = "|" $1 "|"} { $1 = sprintf("%-*s", w+5, $1)} { print "   " $1 " | " $2 " | " $3 }' peripheral.tsv peripheral.tsv >> "$svd_help_mcu"
-  create_bitfield_graphic "$input_line"
+  awk -v search="$peripheralregister" -v bw="$bitwidth" -F '\t' '$3 == search { 
+    format = "  %"bw"s | %-2s | %-2s | %-2s | %-2s | %s\n"; 
+    printf format, "*" $5 "*", $7, $8, $7 + $8, $9, $10
+    }' bitfield.tsv >> "$svd_help_mcu"
 
-}
-
-create_bitfield_graphic() {
-  minchar=4
-  # Create file limited to this register. Include name, bitoffsest, bitwidth, access. Also, calculate min char needed for each name
-  awk -v search="$peripheralregister" -v minwidth="$minchar" -F '\t' '$3 == search { numcells = $8; minavail = numcells * minwidth; nameneed = length($4) + 2; max = ( minavail > nameneed ) ? minavail : nameneed; newcellsize = int(max / numcells); print $4, $7, $8, $9, newcellsize }' bitfield.tsv > bit_tmp.txt
-
-  # Sort rows in bit_tmp.txt ascending by bit offset. SVD is inconsistent and lists bitfields in both directions
-  sort -t' ' -k2,2n bit_tmp.txt > sorted_data.txt
-  mv sorted_data.txt bit_tmp.txt
-
-
-  cellwidth=0
-  cellwidth=$(awk 'NR==FNR {w = $5 > w ? $5 : w; next} END { print w }' bit_tmp.txt)
-
-  # Add rows for reserved sections to bit_tmp.txt
-  bitdata=""
-  file="bits.txt"
-  if [ -e "$file" ]; then
-    > "$file"
-  else
-    touch "$file"
-  fi
-  cursor=0
-  newbo=0
-  newbw=0
-
-  while IFS=" " read -r name bo bw ac _; do
-    #left=$((bo + bw))
-    #newbo="$bo"
-    if [ "$bo" -gt "$cursor" ]; then # Bits were skipped, add a reserved section
-      newbo="$cursor"
-      newbw=$(( bo - cursor ))
-      #if [ ( "$bo" -lt 16 ) && ( $ 
-      #cursor="$newbo"
-      if [ "$newbo" -le 15 ] && [ $(( newbw + newbo )) -gt 16 ]; then # If reserved crosses 16, split around 16
-        bitdata="${bitdata}res $newbo $(( 16 - newbo )) $ac\n"
-        bitdata="${bitdata}res 16 $(( bo - 16 )) $newbw $ac\n"
-      else
-        bitdata="${bitdata}res $newbo $newbw $ac\n"
-      fi
-      #cursor=$(( cursor + newbw )) 
-    else
-    fi
-    if [ "$bo" -le 15 ] && [ $(( bo + bw )) -gt 16 ]; then # If named crosses 16, split around 16 
-      bitdata="${bitdata}$name $bo $(( 16 - bo )) $ac\n"
-      bitdata="${bitdata}$name 16 $(( bo + bw - 16 )) $ac\n"
-    else
-      bitdata="${bitdata}$name $bo $bw $ac\n"
-    fi
-    cursor=$(( bo + bw ))
-  done < bit_tmp.txt
-
-  # Check if we are on the last line
-  if [ "$cursor" -lt 31 ]; then # Add reserved section at end
-    newbw=$(( 32 - cursor ))
-    if [ "$cursor" -le 15 ] && [ $(( newbw + cursor )) -gt 16 ]; then # Split at 16
-      bitdata="${bitdata}res $cursor $(( 16 - cursor )) $ac\n"
-      bitdata="${bitdata}res 16 16 $ac\n"
-    else
-      bitdata="${bitdata}res $cursor $newbw $ac\n"
-    fi
-  fi
-
-  echo -e "${bitdata}" >> "$file"
-
-  #awk '{ print $0}' bits.txt >> "$svd_help_mcu"
-
-  # Print high 16 bits of word
-  echo -e "" >> "$svd_help_mcu"
-  
-  count=16
-
-
-  # Generate bit number labels
-  split_column=$(( (cellwidth + 1) * 16 ))
-  #echo -e "spit_column=$split_column" >> "$svd_help_mcu"
-  bit_labels=""
-  # Generate bit labels
-  for i in $(seq 0 31); do
-    len="${#i}"  
-    width=$(((cellwidth - len) / 2 + len))
-    remain=$((cellwidth - width))
-    bit_labels="$(printf ' %*s%*s' "$width" "$i" "$remain" " ")${bit_labels}"
-  done
-  #echo -e "$bit_labels" >> "$svd_help_mcu"
-  
-  bit_bar="+"
-  bit_name="|"
-  bit_access="|"
-  midbit_bar="+"
-
-  # Generate top/bottom bar
-  for i in $(seq 0 31); do
-    for j in $(seq 1 $cellwidth); do
-      bit_bar="${bit_bar}-"
-    done
-    bit_bar="${bit_bar}+"
-  done
-
-  # Generate bit names
-  # Read each line from the bit_tmp.txt file
-  while IFS=" " read -r name bo bw ac _; do
-    #echo "line=$name,$bo,$bw, $cellwidth" >> "$svd_help_mcu"
-      total_width=$((((cellwidth + 1) * bw) ))
-      name_len="${#name}"
-      ac_len="${#ac}"
-      rtpad_name=$(( (total_width - name_len) / 2 ))
-      ltpad_name=$(( total_width - name_len - rtpad_name - 1))
-      rtpad_ac=$(( (total_width - ac_len) / 2 ))
-      ltpad_ac=$(( total_width - ac_len - rtpad_ac - 1))
-      space_width=$((cellwidth * bw + bw - 1))
-      if [ "$name" = "res" ]; then # print midbit_bar res, leave name and access empty
-        bit_name="|$(printf "%-${space_width}s" "")${bit_name}"
-        bit_access="|$(printf "%-${space_width}s" "")${bit_access}"
-        midbit_bar="+$(printf "%-*s%s%*s" "$ltpad_name" " " "$name" "$rtpad_name")${midbit_bar}"
-      else # print name and ac, leave midbit_bar empty
-        bit_name="|$(printf "%-*s%s%*s" "$ltpad_name" " " "$name" "$rtpad_name")${bit_name}"
-        bit_access="|$(printf "%-*s%s%*s" "$ltpad_ac" " " "$ac" "$rtpad_ac")${bit_access}"
-        dash_width=$((cellwidth * bw + bw - 1))
-        for j in $(seq 1 $dash_width); do
-          midbit_bar="-${midbit_bar}"
-        done
-        midbit_bar="+${midbit_bar}"
-      fi
-  done < bits.txt
-
-  bit_labels_high="$(echo "$bit_labels" | cut -c 1-$split_column)"
-  bit_bar_high="$(echo "$bit_bar" | cut -c 1-$split_column)+"
-  bit_name_high="$(echo "$bit_name" | cut -c 1-$split_column)|"
-  midbit_bar_high="$(echo "$midbit_bar" | cut -c 1-$split_column)|"
-  bit_access_high="$(echo "$bit_access" | cut -c 1-$split_column)|"
-  bit_bar_high="$(echo "$bit_bar" | cut -c 1-$split_column)+"
-
-  bit_labels_low="$(echo "$bit_labels" | cut -c $((split_column+1))-)"
-  bit_bar_low="$(echo "$bit_bar" | cut -c $((split_column+1))-)"
-  bit_name_low="$(echo "$bit_name" | cut -c $((split_column+1))-)"
-  midbit_bar_low="$(echo "$midbit_bar" | cut -c $((split_column+1))-)"
-  bit_access_low="$(echo "$bit_access" | cut -c $((split_column+1))-)"
-  bit_bar_low="$(echo "$bit_bar" | cut -c $((split_column+1))-)"
-
-  high="${bit_labels_high}\n"
-  high="${high}${bit_bar_high}\n"
-  high="${high}${bit_name_high}\n"
-  high="${high}${midbit_bar_high}\n"
-  high="${high}${bit_access_high}\n"
-  high="${high}${bit_bar_high}\n"
-  high="${high}\n"
-
-  low="${bit_labels_low}\n"
-  low="${low}${bit_bar_low}\n"
-  low="${low}${bit_name_low}\n"
-  low="${low}${midbit_bar_low}\n"
-  low="${low}${bit_access_low}\n"
-  low="${low}${bit_bar_low}\n"
-  low="${low}\n"
-
-  echo -e "${high}${low}" >> "$svd_help_mcu"
+  echo -e "${border_b}" >> "$svd_help_mcu"
+  echo -e " (bo) bit offset, (bw) bitwidth, (be) bit end, (ac) access rights\n\n" >> "$svd_help_mcu"
 }
 
 # Loop through each bitfield
@@ -444,10 +471,11 @@ rm -f peripheral_raw.tsv
 rm -f peripheral.tsv
 rm -f register_raw.tsv
 rm -f register_tmp.tsv
-rm -f register.tsv
+#rm -f register.tsv
 rm -f bitfield_raw.tsv
 rm -f bitfield_tmp.tsv
 rm -f bitfield.tsv
 rm -f bit_tmp.txt
 rm -f bits.txt
+rm -f mcu_replacement_bitfield.txt
 

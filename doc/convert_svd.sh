@@ -16,9 +16,9 @@ svd_directory=/home/brett/.vim/doc
 
 # Select/add the svd filename
 #
-#svd_file=STM32F103.svd
+svd_file=STM32F103.svd
 #svd_file=STM32F411.svd
-svd_file=STM32F0x1.svd
+#svd_file=STM32F0x1.svd
 #svd_file=STM32H7x3.svd
 
 # Select/add the reference manual page file
@@ -26,15 +26,15 @@ svd_file=STM32F0x1.svd
 # Page numbers will appear as hyperlinks in the MCU help file
 # File format is 'page# <tab> registername'
 #
-svd_rm_pages=rm_stm32f0x1.tsv
-#svd_rm_pages=rm_stm32f103.tsv
+#svd_rm_pages=rm_stm32f0x1.tsv
+svd_rm_pages=rm_stm32f103.tsv
 #svd_rm_pages=rm_stm32f411.tsv
 
 # Select/add the PDF file path that will appear in the page hyperlinks for each register
 # Test the hyperlink by pasting the hyperlink below into a web browsesr
 #
-svd_rm_pdf=file:///usr/home/brett/.vim/doc/RM0091%20Reference%20manual%20STM32F0xx.pdf
-#svd_rm_pdf=file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf
+#svd_rm_pdf=file:///usr/home/brett/.vim/doc/RM0091%20Reference%20manual%20STM32F0xx.pdf
+svd_rm_pdf=file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf
 #svd_rm_pdf=file:///usr/home/brett/.vim/doc/STM32F411CEU6_ReferenceManual.pdf
 
 # ============================================================================
@@ -443,7 +443,7 @@ create_bitfield_table() {
   
   awk -v search="$peripheralregister" -v bw="$bitwidth" -F '\t' '$3 == search { 
     format = "  %"bw"s | %-2s | %-2s | %-2s | %-2s | %s\n"; 
-    printf format, "*" $5 "*", $7, $8, $7 + $8, $9, $10
+    printf format, "*" $5 "*", $7, $8, $7 + $8 - 1, $9, $10
     }' bitfield.tsv >> "$svd_help_mcu"
 
   echo -e "${border_b}" >> "$svd_help_mcu"
@@ -471,10 +471,10 @@ rm -f peripheral_raw.tsv
 rm -f peripheral.tsv
 rm -f register_raw.tsv
 rm -f register_tmp.tsv
-#rm -f register.tsv
+rm -f register.tsv
 rm -f bitfield_raw.tsv
 rm -f bitfield_tmp.tsv
-rm -f bitfield.tsv
+#rm -f bitfield.tsv
 rm -f bit_tmp.txt
 rm -f bits.txt
 rm -f mcu_replacement_bitfield.txt

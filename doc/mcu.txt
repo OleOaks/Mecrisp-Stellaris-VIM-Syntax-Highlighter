@@ -2759,7 +2759,7 @@
  Reset:       $00000083
  Description: Clock control register
  MCU:         STM32F103.svd
- Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=132
+ Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=99
               (place cursor on hyperlink, type 'gx' to follow)
 
  ----------------+----+----+----+----+---------------------------------------
@@ -2787,7 +2787,7 @@
  Reset:       $00000000
  Description: Clock configuration register (RCC_CFGR)
  MCU:         STM32F103.svd
- Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=134
+ Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=101
               (place cursor on hyperlink, type 'gx' to follow)
 
  -------------------+----+----+----+----+---------------------------------
@@ -2816,7 +2816,7 @@
  Reset:       $00000000
  Description: Clock interrupt register (RCC_CIR)
  MCU:         STM32F103.svd
- Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=137
+ Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=104
               (place cursor on hyperlink, type 'gx' to follow)
 
  ------------------+----+----+----+----+---------------------------------------
@@ -2851,7 +2851,7 @@
  Reset:       $000000000
  Description: APB2 peripheral reset register (RCC_APB2RSTR)
  MCU:         STM32F103.svd
- Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=141
+ Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=106
               (place cursor on hyperlink, type 'gx' to follow)
 
  ------------------------+----+----+----+----+------------------------------
@@ -2887,7 +2887,7 @@
  Reset:       $00000000
  Description: APB1 peripheral reset register (RCC_APB1RSTR)
  MCU:         STM32F103.svd
- Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=142
+ Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=109
               (place cursor on hyperlink, type 'gx' to follow)
 
  ------------------------+----+----+----+----+------------------------
@@ -2928,7 +2928,7 @@
  Reset:       $00000014
  Description: AHB Peripheral Clock enable register (RCC_AHBENR)
  MCU:         STM32F103.svd
- Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=145
+ Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=111
               (place cursor on hyperlink, type 'gx' to follow)
 
  --------------------+----+----+----+----+-----------------------------
@@ -2953,7 +2953,7 @@
  Reset:       $00000000
  Description: APB2 peripheral clock enable register (RCC_APB2ENR)
  MCU:         STM32F103.svd
- Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=146
+ Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=112
               (place cursor on hyperlink, type 'gx' to follow)
 
  ----------------------+----+----+----+----+-------------------------------------
@@ -2989,7 +2989,7 @@
  Reset:       $00000000
  Description: APB1 peripheral clock enable register (RCC_APB1ENR)
  MCU:         STM32F103.svd
- Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=148
+ Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=115
               (place cursor on hyperlink, type 'gx' to follow)
 
  ----------------------+----+----+----+----+-------------------------------
@@ -3030,7 +3030,7 @@
  Reset:       $00000000
  Description: Backup domain control register (RCC_BDCR)
  MCU:         STM32F103.svd
- Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=150
+ Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=118
               (place cursor on hyperlink, type 'gx' to follow)
 
  -----------------+----+----+----+----+--------------------------------------
@@ -3054,7 +3054,7 @@
  Reset:       $0C000000
  Description: Control/status register (RCC_CSR)
  MCU:         STM32F103.svd
- Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=152
+ Ref Manual:  file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf#page=119
               (place cursor on hyperlink, type 'gx' to follow)
 
  ------------------+----+----+----+----+--------------------------------------

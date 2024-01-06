@@ -1029,7 +1029,14 @@ TODO
 /    ( n1 n2 -- n3 )~
 n1/n2 = n3
 
-TODO
+NOTE: Division is for signed values. -2147483648 to 2147483647.
+
+For example dividing $FFFF FFFF by 2 is equal to $7FFF FFFF for unsigned values.
+  However, $FFFF FFFF is signed -1, not 4294967295. signed division will be
+  -1 / 2 = 0 
+
+Unsigned values greater than 2147483647 ( $7FFFFFFF ) will not give correct
+  division results, because those values are treated as signed negative values.
 
 ------------------------------------------------------------------------------
                                                                           *star*
@@ -1153,7 +1160,15 @@ Double Number Math~
 um* ( u1 u2 -- ud )~
 32*32 = 64 Multiplication
 
-TODO
+Uses two stack values, one for each multiplicand, and returns a double word as
+  two stack values. The last, or top stack value is the HIGH word, below that
+  is the LOW word.
+
+For example: "3200 $FFFFFFF um*" ==> 2077404032:2783
+  "ud." ==> 11954971388800 
+
+One way to test if a 32*32 will overflow is to use um* and check the top of 
+  stack value. If it's zero, no overflow because the HIGH word is zero.
 
 ------------------------------------------------------------------------------
                                                                         *udstar*
@@ -1300,9 +1315,12 @@ TODO
 s>d ( n -- d )~
 Turn a single into a double
 
-TODO
+Puts a zero on the stack.
+
+For example: "99 s>d" Puts 99 on the stack, s>d puts a zero on the stack.
 
 
+To turn a double into a single, use DROP which will 
 ==============================================================================
                                                                  *example_01.09*
 Fixed Point Arithmetic~
@@ -1662,7 +1680,9 @@ TODO
 fill ( c-addr u c -- )~
 Fill u Bytes of Memory with value c
 
-TODO
+WARNING - This is for RAM use only. This does not work in flashed code. An
+Unhandled Interrupt 00000003 ! will occur if flashing code with FILL word.
+
 
 ------------------------------------------------------------------------------
                                                                      *2constant*
@@ -2055,15 +2075,31 @@ TODO
 ud. ( ud -- )~
 Print unsigned double number
 
-TODO
+Consumes two stack values. The top of stack value is considered the HIGH word,
+  the second stack value is considered the LOW word.
+
+See d. below for an explanation of the double word format.
 
 ------------------------------------------------------------------------------
                                                                             *d.*
 d. ( d -- )~
 Print double number
 
-TODO
+Consumes two stack values. The top of stack value is considered the HIGH word,
+  the second stack value is considered the LOW word.
 
+For example: double-word 234:5687 LOW:HIGH
+  Top stack value    = 5687 HIGH word
+  Second stack value =  234 LOW word
+  'd.' produces 24425479012586 ok. (BUT WHY?)
+
+  To calculate the output, the HIGH word must be left shifted by 32, or
+    multiplied by ($FFFFFFFF + 1) and added to the low word
+
+  The HIGH word value is '0 5687 ud.' ==>  24425479012352
+  The  LOW word value is '234 0 ud.'  ==> +           234
+                                          ---------------
+  Summed                              ==>  24425479012586
 
 ==============================================================================
                                                                  *example_01.19*

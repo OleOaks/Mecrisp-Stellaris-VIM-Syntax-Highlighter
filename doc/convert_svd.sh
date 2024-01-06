@@ -19,16 +19,22 @@ svd_directory=/home/brett/.vim/doc
 svd_file=STM32F103.svd
 #svd_file=STM32F411.svd
 #svd_file=STM32F0x1.svd
+#svd_file=STM32G431.svd
 #svd_file=STM32H7x3.svd
 
-# Select/add the reference manual page file
+# Select/add the reference manual page file (the file is read-only and will not be edited by this script)
 # You can create your own mapping between register names and PDF Reference Manual
+# A stub file is created for you (without page numbers) named blank_refmanualpage_to_register.tsv
+# If this is the first time running this script for a new MCU, the file below won't exist. Leave the
+#   uncommented item below as-is. After running this script, rename the blank file to name appropriate for your MCU,
+#   then fill in the page numbers manually and re-run this script file.
 # Page numbers will appear as hyperlinks in the MCU help file
 # File format is 'page# <tab> registername'
 #
 #svd_rm_pages=rm_stm32f0x1.tsv
 svd_rm_pages=rm_stm32f103.tsv
 #svd_rm_pages=rm_stm32f411.tsv
+#svd_rm_pages=rm_stm32g431.tsv
 
 # Select/add the PDF file path that will appear in the page hyperlinks for each register
 # Test the hyperlink by pasting the hyperlink below into a web browsesr
@@ -36,6 +42,7 @@ svd_rm_pages=rm_stm32f103.tsv
 #svd_rm_pdf=file:///usr/home/brett/.vim/doc/RM0091%20Reference%20manual%20STM32F0xx.pdf
 svd_rm_pdf=file:///usr/home/brett/.vim/doc/RM0008%20Reference%20manual%20STM32F10xxx.pdf
 #svd_rm_pdf=file:///usr/home/brett/.vim/doc/STM32F411CEU6_ReferenceManual.pdf
+#svd_rm_pdf=file:///usr/home/brett/.vim/doc/RM0440%20Reference%20manual%20STM32G4xx.pdf
 
 # ============================================================================
 # Store the svd path/file
@@ -131,6 +138,11 @@ mv "$tmpfile" register.tsv
 # Concatenate peripheral-register name: tempfile-->Peripheral(1), Register(2), Per-Reg(3), BaseAddr(4), Offset(5), AbsAddr(6), Reset(7), Access(8), Description(9)
 awk -F '\t' 'BEGIN {OFS=FS} { print $1, $2, $1 "_" $2, $3, $4, $5, $6, $7, $8 }' register.tsv > "$tmpfile"
 mv "$tmpfile" register.tsv
+
+# Create a stub file that can be used as the source for register names likned to reference manual page numbers
+# After running this script, rename the blank_refmanualpage_to_register.tsv to rm_stm32xxxxx.tsv (replace xxxxx with your MCU)
+# Manually insert reference manual page numbers where each register can be found
+awk -F '\t' '{print "\t" $3}' register.tsv > blank_refmanualpage_to_register.tsv
 
 # Create bitfield file
 peripheral_lookup="peripheral_lookup.tsv"

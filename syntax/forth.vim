@@ -334,7 +334,7 @@ hi def link forthHardwareAccess Identifier
 hi def link forthCharOps Character
 hi def link forthInteger Number
 hi def link forthFixed Structure
-hi def link forthComment Conceal
+hi def link forthComment Comment
 hi def link forthString String
 
 hi def link forthCustomWord Function

@@ -12,19 +12,19 @@ If you need help remembering a word while coding, the plugin provides word-compl
 
 ## MAIN FEATURES:
 
-1. Syntax Highlighting
-   - All standard Mecrisp-Stellaris words
+1. Syntax Highlighting ( colored text )
+   - All standard Mecrisp-Stellaris words. e.g. DUP, OVER, BUFFER:, CREATE. DO, LOOP, etc...
    - All current project words (from any file or folder listed in your forth.cfg file)
    - All MCU specific peripheral-register-bitfields (swap out the file when changing MCU's)
 
-2. Help files (Ctrl-k to open man pages)
-   - All standard Mecrisp-Stellaris words
-   - MCU specific Peripheral-register-bitfield
+2. Help files for FORTH word ( ctrl-k to open man pages )
+   - All standard Mecrisp-Stellaris words. e.g. DUP, OVER, BUFFER:, CREATE, DO, LOOP, etc...
+   - MCU specific Peripheral-register-bitfield definitions. e.g. GPIOA, RC_APB2ENR, USART2_CR1_TE, etc...
 
-3. Forthtags (Ctrl-] to follow intra-project links)
+3. Forthtags ( ctrl-] to follow see definitions of words )
    - Links to definitions of all project level user created words
 
-4. code-completion - (Ctrl-P on any partial word in insert mode)
+4. code-completion - ( ctrl-p on any partial word in insert mode)
    - A dictionary of all standard Mecrisp-Stellaris words
    - A dictionary of current project words
    - A dictionary of MCU specific peripheral-register-bitfields
@@ -32,7 +32,7 @@ If you need help remembering a word while coding, the plugin provides word-compl
 ## SUMMARY:
 
 1. All text in your .fs code should be syntax highlighted, there should be no black/white remaining.
-2. For standard Mecrisp words, type `Ctrl-k` to open a help file.
+2. For standard Mecrisp words, type `Ctrl-k` in normal mode, the word the cursor is on will open a help file.
 3. For any MCU Peripheral-Register-Bitfield words, type `Ctrl-k` to open a help file.
 4. For any forth words you've defined in project .fs files, type `Ctrl-]` to jump to it's definition
 5. For help completing a word, type `Ctrl-p`. Works with all word types listed, 2, 3, and 4 above.
@@ -119,7 +119,7 @@ If you need help remembering a word while coding, the plugin provides word-compl
 
 1. Beginner - Must know
    - `Ctrl-k`  - Open help for specific word
-   - `Ctrl-p`  - Start code-completion
+   - `Ctrl-p`  - Start code-completion pop-up
    - `Ctrl-]`  - Follow forthtag link to definition of custom word
    - `:q`      - Close a help file that was opened
 
@@ -170,6 +170,9 @@ A. No, when you open or save a .fs file, the plugin will use the files current p
 ### Q. What happens if I don't have a forthtags.cfg for the directory my .fs file is saved to?
 A. Without the forthtags.cfg, the plugin has no idea where else to look for words you want included in your project, therefore you will see uncolored text for words that are not highlighted by the plugin. Also, if you Ctrl-] on any uncolored word, nothing will happen because there is no forthtag associtated with that word. All the helpfiles will still work for standard mecrisp and MCU specific words.
 
+### Q. PDF's don't open to the correct page number when I follow the pdf links in mcu.txt by typing 'gx'
+A. Try a different default pdf reader in the 'Preferred Applications' Linux system setting, some pdf readers don't recognize the page number designator at the end of the link. For instance the default Linux Min XReader will only open to page 1, but qpdfview does open to the correct page.
+
 ### Q. Wow! I like having help files for Forth - Can I do the same with my own notes for topics specific to me?
 A. Of course! I maintain a 'brett.txt' file in the ~/.vim/doc folder. I type ':h brett.txt' on the command line in VIM and it opens my personal help file. Or, I can type any topic I've defined and use Ctrl-k to open the help file. You can see all of the forth help files as well as your personal file when you type ':help' and G to the bottom of the VIM help where it lists links to all the custom help files. If you edit a help file, you need to tell VIM to update the helptags by typing ':helptags ALL' which will regenerate all the tags. I've included a skeleton version of my personal help file with this plugin, you can just copy or rename it. The help file needs a specific first and last line in the file, it will be obvious when you edit my file. To create help links that will be opened with Ctrl-k, put asterisks at the beginning and end of the word in the help file: e.g. *myTopic*. To link to other topics within the help files, put pipes on either side of the word: e.g. |myTopic|. To follow a link type Ctrl-].
 
@@ -179,6 +182,11 @@ A. This plugin takes priority. The built-in VIM forth syntax highlighter is made
 ### Q. I'd rather use vscode, is this plugin available for vscode?
 A. Sorry, not from me, and I'm not aware of any others. One of the original reasons I switched to VIM is because the vscode built-in forth syntax was much worse than the built-in VIM syntax highlighting.
 
+### Q. Help does not work, for example, ctrl-k results in "E149: Sorry, no help for help GPIOA_CRL_MODE2" when the cursor is on top of GPIOA_CRL_MODE2. 
+A. Hmmm
+
+### Q. Tags do not work, for example, ctrl-] results in "E428: tag not found: GPIOA_CRL_MODE2" when the curso is on op of GPIOA_CRL_MODE2.
+A. Hmmm
 
 
 The syntax folder should be saved to the ~/.vim/ folder. e.g. ~/.vim/syntax should contain the forth.vim file
